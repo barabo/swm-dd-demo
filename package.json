@@ -1,0 +1,14 @@
+{
+  "name": "swm-c10n-demo",
+  "version": "1.0.0",
+  "description": "Demo code for the May 2021, HL7 Connectathon - SMART Web Messaging Track",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carl Anderson (carl.anderson@microsoft.com)",
+  "license": "MIT",
+  "devDependencies": {
+    "snowpack": "^3.3.7"
+  }
+}

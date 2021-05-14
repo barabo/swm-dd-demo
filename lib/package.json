@@ -1,0 +1,25 @@
+{
+  "name": "swm-client-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "demo.html",
+  "exports": {
+    ".": {
+      "browser": {
+        "default": "./swm.js"
+      }
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "snowpack dev --port 3333"
+  },
+  "author": "Carl Anderson (carl.anderson@microsoft.com)",
+  "license": "MIT",
+  "dependencies": {
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "snowpack": "^3.3.7"
+  }
+}

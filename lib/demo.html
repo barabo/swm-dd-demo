@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Demo Page for SWM client library" />
+    <title>SWM Demo App</title>
+  </head>
+
+  <body>
+    <h1>SWM Library Examples</h1>
+    <code>import * as swm from './swm'</code>
+    <h2>Example handshake message</h2>
+    <code>swm.getHandshakeMessage('bws8YCbyBtCYi5mWVgUDRqX8xcjiudCo') =></code>
+    <pre id="handshakeMessage">undefined</pre>
+  </body>
+
+  <script type="module">
+    import * as swm from './swm';
+    document.getElementById("handshakeMessage").innerText = JSON.stringify(
+      swm.getHandshakeMessage('bws8YCbyBtCYi5mWVgUDRqX8xcjiudCo'), null, 2
+    );
+  </script>
+
+</html>
