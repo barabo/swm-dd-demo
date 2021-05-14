@@ -157,7 +157,11 @@ function App() {
         </div>
       </main>
       <footer className="App-footer">
-        <p>TODO: link to the demo app repo?</p>
+        <a 
+          target="_blank"
+          rel="noreferrer noopener"      
+          href='https://tinyurl.com/swm-c10n-code'
+        >https://tinyurl.com/swm-c10n-code</a>
       </footer>
     </div>
   );
