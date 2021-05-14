@@ -1,0 +1,103 @@
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.App code {
+  background: #FFF3;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.App p {
+  margin: 0.4rem;
+  color: #cafe;
+  font-size: calc(10px + 2vmin);
+  text-align: left;
+}
+.App pre {
+  color: #c0ff33;
+  background: #FFF3;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: left;
+}
+
+.App-header {
+  background-color: #caf3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #cafe;
+}
+
+.App main {
+  flex: 1;
+  height: 100vh;
+}
+
+.App-buttons {
+  background: lightgray;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  padding: 2px;
+}
+
+.App-buttons p {
+  color: black;
+  font-size: calc(10px + 1vmin);
+}
+
+.App-buttons button {
+  margin: 3px;
+}
+
+.message-panel {
+  display: flex;
+  height: 75vh;
+}
+
+.message-panel p {
+  font-size: calc(10px + 1vmin);
+  color: #61dafb;
+}
+
+.message-panel div {
+  padding: 1vw 1vw 2vw 2vw;
+  border-radius: 4px;
+}
+
+.to-send {
+  display: flex;
+  flex-direction: column;
+}
+
+.send-button {
+  background-color: rgba(8, 200, 8, 0.329);
+}
+
+.from-ehr {
+  display: flex;
+  flex-direction: column;
+}
+
+.App-message {
+  width: 45vw;
+  display: flex;
+  height: 60vh;
+  flex: 1;
+}
+.App-footer {
+  background-color: #caf3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #cafe;
+}
+
+.App-link {
+  color: #61dafb;
+}
