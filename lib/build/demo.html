@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Demo Page for SWM client library" />
+    <title>SWM Demo App</title>
+  </head>
+
+  <body>
+    <h1>SWM Library Examples</h1>
+    <pre>
+      import * as swm from './swm';
+
+      // This is a mock, slimmed-down version of a SMART launch client.
+      const client = {
+        'tokenResponse': {
+          'smart_web_messaging_handle': 'session1handle',
+          'smart_web_messaging_origin': 'http://localhost:3333'
+        }
+      }
+    </pre>
+    <h2>Example handshake message</h2>
+    <pre>
+      swm.getHandshakeMessage(client) => {
+        TODO
+      }
+    </pre>
+  </body>
+
+  <script type="module">
+    import * as swm from './swm.js';
+    const client = {
+      'tokenResponse': {
+        'smart_web_messaging_handle': 'session1handle',
+        'smart_web_messaging_origin': 'http://localhost:3333'
+      }
+    }
+
+  </script>
+
+</html>

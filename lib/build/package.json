@@ -13,8 +13,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "snowpack dev --port 3333",
-    "build": "snowpack build",
-    "publish": "npm publish"
+    "build": "snowpack build"
   },
   "author": "Carl Anderson (carl.anderson@microsoft.com)",
   "license": "MIT",
