@@ -3,7 +3,6 @@ import './App.css';
 import * as swm from './swm';
 
 // TODO: detect the presence of a SMART client and use that instead
-
 const mockClient = {
   tokenResponse: {
     "access_token": "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
@@ -18,7 +17,7 @@ const mockClient = {
 
 function App() {
   const [message, setMessage] = useState("{}");
-  const [messageFromEhr, setMessageFromEhr] = useState("");
+  const [response, setResponse] = useState("");
   // TODO: allow the UI to modify these values from the SMART launch client
   const [messageHandle, setMessageHandle] = useState(
     mockClient.tokenResponse.smart_web_messaging_handle
@@ -27,13 +26,10 @@ function App() {
     mockClient.tokenResponse.smart_web_messaging_origin
   );
 
-  var messageEventHandler = function (e) {
-    console.log('HEY APP XXX', e);
-    if (e.origin === targetOrigin && e.data) {
-      setMessageFromEhr(JSON.stringify(e.data, null, 2));
-    }
-  }
-  window.addEventListener('message', messageEventHandler, false);
+  // Enable the postMessage API for EHR responses to the App.
+  swm.enablePostMessage(targetOrigin, (response) => {
+    setResponse(JSON.stringify(response, null, 2));
+  });
   
   function updateMessage(e) {
     // TODO: validate the message structure to expose problems with it.
@@ -54,7 +50,6 @@ function App() {
   }
 
   function uiLaunchActivity() {
-    // TODO: make sure this jibes with the activity catalog examples.
     stringify(
       swm.getUiLaunchActivityMessage(
         mockClient, 'problem-review', {
@@ -95,16 +90,28 @@ function App() {
   }
 
   function sendMessage() {
-    console.log('XXX Sending:', message);  // XXX
-    setMessageFromEhr("Sending message to EHR...");
-    swm.sendMessage(window.parent, mockClient, message);
-    setMessageFromEhr("Awaiting EHR response...");
+    try {
+      const m = JSON.parse(message);
+      const type = Object.prototype.toString.call(m);
+      const expected = Object.prototype.toString.call({});
+      if (type !== expected) {
+        throw new Error(
+          `Invalid message type: expected "${expected}", got "${type}"!`
+        );
+      }
+      setResponse('Failed to send message to EHR!');
+      swm.sendMessage(mockClient, m);
+      setResponse('Awaiting EHR response...');
+    } catch (e) {
+      setResponse(e.message);
+      console.error('failed to send message', e);
+    }
   }
 
   function copyResponseToClipboard() {
     // This only works in Chrome when the iframe explicitly allows
     // clipboard write access via <iframe allow="clipboard-write" ...
-    navigator.clipboard.writeText(messageFromEhr);
+    navigator.clipboard.writeText(response);
   }
 
   // Display a different title if not embedded or launched.
@@ -131,7 +138,7 @@ function App() {
         </div>
         <div className="message-panel">
           <div className="to-send">
-            <p><i>Editable</i> SMART Web Message to send to EHR:</p>
+            <p><b><i>Editable</i></b> SMART Web Message to send to EHR:</p>
             <textarea
               className="App-message"
               value={message}
@@ -144,10 +151,11 @@ function App() {
             >SEND</button>
           </div>
           <div className="from-ehr">
-            <p><i>Read-only</i> SMART Web Message EHR response:</p>
+            <p><b><i>Read-only</i></b> SMART Web Message EHR response:</p>
             <textarea
+              disabled={true}
               className="App-message"
-              value={messageFromEhr}
+              value={response}
               readOnly={true}
             />
             <button

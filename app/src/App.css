@@ -57,6 +57,7 @@
 .message-panel {
   display: flex;
   height: 75vh;
+  margin: 0.7rem;
 }
 
 .message-panel p {
@@ -72,6 +73,7 @@
 .to-send {
   display: flex;
   flex-direction: column;
+  background-color: lightslategrey;
 }
 
 .send-button {
@@ -89,6 +91,7 @@
   height: 60vh;
   flex: 1;
 }
+
 .App-footer {
   background-color: #caf3;
   display: flex;
