@@ -9,17 +9,34 @@
 
   <body>
     <h1>SWM Library Examples</h1>
-    <code>import * as swm from './swm'</code>
+    <pre>
+      import * as swm from './swm';
+
+      // This is a mock, slimmed-down version of a SMART launch client.
+      const client = {
+        'tokenResponse': {
+          'smart_web_messaging_handle': 'session1handle',
+          'smart_web_messaging_origin': 'http://localhost:3333'
+        }
+      }
+    </pre>
     <h2>Example handshake message</h2>
-    <code>swm.getHandshakeMessage('bws8YCbyBtCYi5mWVgUDRqX8xcjiudCo') =></code>
-    <pre id="handshakeMessage">undefined</pre>
+    <pre>
+      swm.getHandshakeMessage(client) => {
+        TODO
+      }
+    </pre>
   </body>
 
   <script type="module">
     import * as swm from './swm';
-    document.getElementById("handshakeMessage").innerText = JSON.stringify(
-      swm.getHandshakeMessage('bws8YCbyBtCYi5mWVgUDRqX8xcjiudCo'), null, 2
-    );
+    const client = {
+      'tokenResponse': {
+        'smart_web_messaging_handle': 'session1handle',
+        'smart_web_messaging_origin': 'http://localhost:3333'
+      }
+    }
+
   </script>
 
 </html>
