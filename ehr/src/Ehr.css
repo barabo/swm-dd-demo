@@ -23,7 +23,8 @@
 .Site-content .Ehr-buttons p {
   color: black;
   margin: 0.4rem;
-  font-size: calc(6px + 1vmin);
+  font-size: calc(4px + 1vmin);
+  max-height: 3vh;
   flex: 1;
 }
 

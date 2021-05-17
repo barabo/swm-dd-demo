@@ -39,7 +39,6 @@ function Ehr() {
   function updateResponse(e) {
     // TODO: validate the message structure to expose problems with it.
     // TODO: only enable the SEND button when the e.target.value is valid.
-    console.log('XXX', e);
     setResponse(e.target.value);
   }
 
