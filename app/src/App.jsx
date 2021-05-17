@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './App.css';
-import * as swm from './swm';
+import * as swm from './swm';  // XXX: local dev
+//import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
 
 // TODO: detect the presence of a SMART client and use that instead
+// TODO: move this mock client into the swm lib as an example.
 const mockClient = {
   tokenResponse: {
     "access_token": "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
@@ -92,13 +94,7 @@ function App() {
   function sendMessage() {
     try {
       const m = JSON.parse(message);
-      const type = Object.prototype.toString.call(m);
-      const expected = Object.prototype.toString.call({});
-      if (type !== expected) {
-        throw new Error(
-          `Invalid message type: expected "${expected}", got "${type}"!`
-        );
-      }
+      swm.checkMessageType(m);
       setResponse('Failed to send message to EHR!');
       swm.sendMessage(mockClient, m);
       setResponse('Awaiting EHR response...');
