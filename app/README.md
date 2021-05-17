@@ -24,6 +24,8 @@ import * as swm from 'swm-client-lib';
 ### Session messageHandle management
 Within your EHR, you will need to create an `iframe` element to embed the app.
 
+The provided demo EHR was designed to map a session `messagingHandle` to the `iframe` `contentWindow` object itself, which is recorded automatically when the `iframe` finishes loading.  Your EHR may have different capabilities and requirements, but whatever strategy you are working with, the `smart_web_messaging_handle` launch context parameter must be provided in the SMART Launch client object, and provided to the EHR (and validated against the session) to be within IG specifications.
+
 Here's an example from the mock EHR React app that may be informative:
 ```js
 import React, { useState } from 'react';
