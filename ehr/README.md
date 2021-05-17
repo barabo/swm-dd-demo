@@ -6,7 +6,7 @@
 
 ### Profile Audience
 
-This app was developed primarily for *App* developers wishing to test their implementation of SMART Web Messaging capabilities against a simple, demo EHR.
+This simple, mock EHR was developed primarily for *App* developers wishing to test their implementation of SMART Web Messaging capabilities against a simple, demo EHR.
 
 Embed your app into this demo EHR, initiate web messages to the EHR, and even modify the EHR responses before sending them back to your app!
 
