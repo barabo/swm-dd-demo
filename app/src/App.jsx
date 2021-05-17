@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import * as swm from './swm';
 
-// CONSIDER: pass around a mock smart launch client instead of 'messageHandle'.
+// TODO: detect the presence of a SMART client and use that instead
+
 const mockClient = {
   tokenResponse: {
     "access_token": "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
@@ -26,10 +27,10 @@ function App() {
     mockClient.tokenResponse.smart_web_messaging_origin
   );
 
-  var messageEventHandler = function (event) {
-    console.log('XXX', event);
-    if (event.origin === targetOrigin && event.data) {
-      setMessageFromEhr(JSON.stringify(event.data, null, 2));
+  var messageEventHandler = function (e) {
+    console.log('HEY APP XXX', e);
+    if (e.origin === targetOrigin && e.data) {
+      setMessageFromEhr(JSON.stringify(e.data, null, 2));
     }
   }
   window.addEventListener('message', messageEventHandler, false);
@@ -45,18 +46,18 @@ function App() {
   }
 
   function handshake() {
-    stringify(swm.getHandshakeMessage(messageHandle));
+    stringify(swm.getHandshakeMessage(mockClient));
   }
 
   function uiDone() {
-    stringify(swm.getUiDoneMessage(messageHandle));
+    stringify(swm.getUiDoneMessage(mockClient));
   }
 
   function uiLaunchActivity() {
     // TODO: make sure this jibes with the activity catalog examples.
     stringify(
       swm.getUiLaunchActivityMessage(
-        messageHandle, 'problem-review', {
+        mockClient, 'problem-review', {
           'problemLocation': 'Condition/123',
         }
       )
@@ -66,7 +67,7 @@ function App() {
   function scratchpadCreate() {
     stringify(
       swm.getScratchpadCreateMessage(
-        messageHandle, {
+        mockClient, {
           'resourceType': 'ServiceRequest',
           'status': 'draft',
         }
@@ -77,7 +78,7 @@ function App() {
   function scratchpadDelete() {
     // TODO: read the contents of the scratchpad to set the location?
     const location = 'MedicationRequest/456';
-    stringify(swm.getScratchpadDeleteMessage(messageHandle, location));
+    stringify(swm.getScratchpadDeleteMessage(mockClient, location));
   }
 
   function scratchpadUpdate() {
@@ -89,13 +90,14 @@ function App() {
     };
     const location = `${resource.resourceType}/${resource.id}`;
     stringify(
-      swm.getScratchpadUpdateMessage(messageHandle, resource, location)
+      swm.getScratchpadUpdateMessage(mockClient, resource, location)
     );
   }
 
   function sendMessage() {
-    console.log('Sending:', message);
-    // TODO: use the swm library to send the message.
+    console.log('XXX Sending:', message);  // XXX
+    setMessageFromEhr("Sending message to EHR...");
+    swm.sendMessage(window.parent, mockClient, message);
     setMessageFromEhr("Awaiting EHR response...");
   }
 
@@ -106,10 +108,9 @@ function App() {
   }
 
   // Display a different title if not embedded or launched.
-  var appTitle = 'This is an embedded demo SMART app.';
+  var appTitle = 'This demo SMART app is embedded in an EHR.';
   if (window.parent === window.self) {
-    appTitle = 'This is a demo SMART app which would be embedded in or launched from an EHR.';
-    // TODO: populate a warning message that there is no EHR detected...
+    appTitle = 'No EHR detected for this demo SMART app; SEND is disabled!';
   }
 
   // Return the App component.
