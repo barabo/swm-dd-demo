@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './Ehr.css';
-import * as swm from './swm';
+import * as swm from './swm';  // XXX local dev only TEMPORARY
+//import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
 /**
  * Maps scratchpad 'locations' to objects.
@@ -109,13 +110,7 @@ function Ehr() {
   function sendResponse() {
     try {
       const r = JSON.parse(response);
-      const type = Object.prototype.toString.call(r);
-      const expected = Object.prototype.toString.call({});
-      if (type !== expected) {
-        throw new Error(
-          `Invalid message type: expected "${expected}", got "${type}"!`
-        );
-      }
+      swm.checkMessageType(r);
       const window = sessionHandles.get(message.messagingHandle);
       if (!window) {
         console.error('Unknown session handle', sessionHandle);
