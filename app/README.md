@@ -78,6 +78,11 @@ function Ehr() {
   );
 ```
 
+## User Interface
+![image](https://user-images.githubusercontent.com/4342684/118530733-98708900-b70a-11eb-920c-60b8609a1592.png)
+
+
+# Running the Demo App Locally
 
 ## Available Scripts
 
