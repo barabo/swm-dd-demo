@@ -3,6 +3,9 @@ import './Ehr.css';
 import * as swm from './swm';  // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
+const defaultAppOrigin = 'http://localhost:8001';
+const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
+
 /**
  * Maps scratchpad 'locations' to objects.
  * TODO: does an update to this trigger a refresh?
@@ -23,9 +26,8 @@ function Ehr() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
   const [messageFromApp, setMessageFromApp] = useState('');
-  // TODO: enable changing the appOrigin and sessionHandle from the UI.
-  const [appOrigin, setAppOrigin] = useState('http://localhost:8001');
-  const [sessionHandle, setSessionHandle] = useState('RXhhbXBsZSBoYW5kbGUK');
+  const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
+  const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
 
   // Enable the postMessage API for App messages to the EHR.
   swm.enablePostMessage(appOrigin, (m) => {
@@ -36,6 +38,22 @@ function Ehr() {
     // BONUS: highlight and enable only the button for the expected response type
     // TODO: check the message handle for a known session handle?
   });
+
+  function openConfig() {
+    document.getElementById('config-panel').showModal();
+  }
+
+  function updateSessionHandle(e) {
+    setSessionHandle(e.target.value);
+  }
+
+  function updateAppOrigin(e) {
+    setAppOrigin(e.target.value);
+  }
+
+  function closeConfig() {
+    document.getElementById('config-panel').close();
+  }
 
   function updateResponse(e) {
     // TODO: validate the message structure to expose problems with it.
@@ -59,17 +77,18 @@ function Ehr() {
   }
 
   function uiLaunchActivity() {
+    const activity = message?.payload?.activityType ?? 'order-review';
     stringify(
       swm.getUiLaunchActivityResponse(
         message.messageId,
         'success',
-        `EHR completed activity "${message.payload.activityType}"`
+        `EHR completed activity "${activity}"`
       )
     );
   }
 
   function scratchpadCreate() {
-    const resourceType = message.payload.resource.resourceType;
+    const resourceType = message.payload?.resource?.resourceType ?? 'Encounter';
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
@@ -82,7 +101,7 @@ function Ehr() {
   }
 
   function scratchpadDelete() {
-    const location = message.payload && message.payload.location || '';
+    const location = message?.payload?.location ?? 'Encounter';
     const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
     const outcome = undefined;  // TODO: add an OperationOutcome
     stringify(swm.getScratchpadDeleteResponse(
@@ -91,7 +110,7 @@ function Ehr() {
   }
 
   function scratchpadUpdate() {
-    const location = message.payload && message.payload.location || '';
+    const location = message?.payload?.location ?? 'Encounter';
     const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
     const outcome = undefined;  // TODO: add an OperationOutcome
     stringify(
@@ -105,6 +124,20 @@ function Ehr() {
     // This only works in Chrome when the iframe explicitly allows
     // clipboard write access via <iframe allow="clipboard-write" ...
     navigator.clipboard.writeText(messageFromApp);
+  }
+
+  function isResponseSendable() {
+    if (!message) {
+      return false;
+    }
+    if (!response) {
+      return false;
+    }
+    const r = JSON.parse(response);
+    if (!r.responseToMessageId) {
+      return false;
+    }
+    return true;
   }
 
   function sendResponse() {
@@ -135,9 +168,49 @@ function Ehr() {
           &nbsp;
           Demo App
         </p>
-        <button className="config-button">configure</button>
+        <button
+          className="config-button"
+          onClick={openConfig}
+        >configure</button>
       </header>
       <main className="Site-content">
+
+        <dialog className="config-panel" id="config-panel">
+          <div className="config-header">
+            <div>EHR Settings</div>
+            <button
+              className="close-config"
+              onClick={closeConfig}
+            >Close</button>
+          </div>
+          <div className="config-settings">
+            <div className="config-field">
+              <div className="config-label">
+                <p>Session Handle</p>
+              </div>
+              <div className="config-text-value">
+                <input
+                  type="text"
+                  value={sessionHandle}
+                  onChange={updateSessionHandle}
+                ></input>
+              </div>
+            </div>
+            <div className="config-field">
+              <div className="config-label">
+                <p>App Origin</p>
+              </div>
+              <div className="config-text-value">
+                <input
+                  type="text"
+                  value={appOrigin}
+                  onChange={updateAppOrigin}
+                ></input>
+              </div>
+            </div>
+          </div>
+        </dialog>
+
         <div className="Ehr-buttons">
           <p>Prepopulate response message below for the incoming</p>
           <button onClick={handshake}>status.handshake</button>
@@ -172,7 +245,7 @@ function Ehr() {
             <button
               className="send-button"
               onClick={sendResponse}
-              disabled={false}
+              disabled={!isResponseSendable()}
             >SEND</button>
           </div>
         </div>
