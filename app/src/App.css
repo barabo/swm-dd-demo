@@ -38,6 +38,39 @@
   padding: 2px;
   margin: 1vmin;
 }
+.config-panel {
+  background-color: lightpink;
+  border-radius: 1vmin;
+  border-color: purple;
+  height: 30vh;
+  width: 30vw;
+}
+.config-header {
+  justify-content: space-between;
+  display: flex;
+  padding-bottom: 1vmin;
+}
+.config-settings {
+  display: flex;
+  flex-direction: column;
+  margin: 1vmin;
+}
+.config-field {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
+  justify-content: space-between;
+}
+.config-field p {
+  color: black;
+  font-size: calc(6px + 1vmin);
+  font-weight: bold;
+}
+.config-field input {
+  font-size: calc(6px + 1vmin);
+  min-width: 250px;
+  min-height: 30px;
+}
 
 .App main {
   flex: 1;

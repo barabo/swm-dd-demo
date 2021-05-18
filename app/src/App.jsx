@@ -33,6 +33,29 @@ function App() {
     setResponse(JSON.stringify(response, null, 2));
   });
   
+  function openConfig() {
+    document.getElementById('config-panel').showModal();
+  }
+
+  function updateMessageHandle(e) {
+    // TODO: clean up value before setting it.
+    setMessageHandle(e.target.value);
+  }
+
+  function updateTargetOrigin(e) {
+    setTargetOrigin(e.target.value);
+  }
+
+  function closeConfig() {
+    configSave();
+    document.getElementById('config-panel').close();
+  }
+
+  function configSave() {
+    mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
+    mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
+  }
+
   function updateMessage(e) {
     // TODO: validate the message structure to expose problems with it.
     // TODO: only enable the SEND button when the e.target.value is valid.
@@ -121,9 +144,47 @@ function App() {
     <div className="App">
       <header className="App-header">
         <p>{appTitle}</p>
-        <button className="config-button">configure</button>
+        <button
+          className="config-button"
+          onClick={openConfig}
+        >configure</button>
       </header>
       <main className="App-main">
+        <dialog className="config-panel" id="config-panel">
+          <div className="config-header">
+            <div>App Settings</div>
+            <button
+              className="close-config"
+              onClick={closeConfig}
+            >Close</button>
+          </div>
+          <div className="config-settings">
+            <div className="config-field">
+              <div className="config-label">
+                <p>Messaging Handle</p>
+              </div>
+              <div className="config-text-value">
+                <input
+                  type="text"
+                  value={messageHandle}
+                  onChange={updateMessageHandle}
+                ></input>
+              </div>
+            </div>
+            <div className="config-field">
+              <div className="config-label">
+                <p>EHR Origin</p>
+              </div>
+              <div className="config-text-value">
+                <input
+                  type="text"
+                  value={targetOrigin}
+                  onChange={updateTargetOrigin}
+                ></input>
+              </div>
+            </div>
+          </div>
+        </dialog>
         <div className="App-buttons">
           <p>Prepopulate message below with a</p>
           <button onClick={handshake}>status.handshake</button>
