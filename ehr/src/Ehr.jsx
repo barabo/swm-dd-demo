@@ -135,6 +135,7 @@ function Ehr() {
           &nbsp;
           Demo App
         </p>
+        <button className="config-button">configure</button>
       </header>
       <main className="Site-content">
         <div className="Ehr-buttons">

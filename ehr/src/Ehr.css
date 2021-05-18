@@ -6,6 +6,14 @@
   color: lightgray;
 }
 
+.config-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 1vh;
+  font-size: calc(4px + 1vmin);
+}
+
 .Site-content {
   flex: 1;
   height: 100vh;

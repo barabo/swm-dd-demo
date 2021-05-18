@@ -121,6 +121,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <p>{appTitle}</p>
+        <button className="config-button">configure</button>
       </header>
       <main className="App-main">
         <div className="App-buttons">
