@@ -29,7 +29,7 @@
   border-radius: 1vmin;
   border-color: purple;
   height: 30vh;
-  width: 30vw;
+  width: 50vw;
 }
 .config-header {
   justify-content: space-between;
@@ -54,10 +54,17 @@
   color: black;
   font-size: 1vmax;
   font-weight: bold;
+  min-width: 10vw;
+  text-align: right;
+}
+.config-text-value {
+  display: table-cell;
+  width: 100%;
 }
 .config-field input {
-  font-size: calc(6px + 1vmin);
-  min-width: 19vmax;
+  font-size: calc(2px + 1vmin);
+  font-family: monospace;
+  width:100%;
   min-height: 2vmax;
 }
 
