@@ -1,9 +1,9 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    public: { url: '/swm-c10n-demo/', static: true },
-    lib: { url: '/swm-c10n-demo/dist' },
-    src: { url: '/swm-c10n-demo/dist' },
+    public: { url: '/app/', static: true },
+    lib: { url: '/app/dist' },
+    src: { url: '/app/dist' },
   },
   plugins: ['@snowpack/plugin-react-refresh', '@snowpack/plugin-dotenv'],
   routes: [
@@ -12,7 +12,7 @@ module.exports = {
   ],
   optimize: {
     /* Example: Bundle your final build: */
-    // "bundle": true,
+    "bundle": true,
   },
   packageOptions: {
     /* ... */
@@ -21,6 +21,6 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
-    /* ... */
+    baseUrl: '/swm-c10n-demo',
   },
 };

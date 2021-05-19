@@ -3,6 +3,9 @@ import './App.css';
 import * as swm from './swm'; // XXX: local dev
 //import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
 
+const defaultOrigin = 'https://barabo.github.io';
+const defaultHandle = 'RXhhbXBsZSBoYW5kbGUK';
+
 // TODO: set up a launch url and launch as a real app would.
 // TODO: move this mock client into the swm lib as an example.
 const mockClient = {
@@ -11,8 +14,8 @@ const mockClient = {
     token_type: 'bearer',
     expires_in: 3600,
     scope: 'patient/Patient.read messaging/ui.launchActivity',
-    smart_web_messaging_origin: 'http://localhost:8000',
-    smart_web_messaging_handle: 'RXhhbXBsZSBoYW5kbGUK',
+    smart_web_messaging_origin: defaultOrigin,
+    smart_web_messaging_handle: defaultHandle,
     state: 'c3RhdGUgZXhhbXBsZSEK',
   },
 };
@@ -40,7 +43,6 @@ function App() {
   }
 
   function updateMessageHandle(e) {
-    // TODO: clean up value before setting it.
     setMessageHandle(e.target.value);
   }
 
@@ -54,6 +56,9 @@ function App() {
   }
 
   function configSave() {
+    if (targetOrigin !== new URL(targetOrigin).origin) {
+      console.error('Invalid origin', targetOrigin);
+    }
     mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
     mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
   }
