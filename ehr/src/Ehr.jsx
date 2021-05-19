@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import './Ehr.css';
-import * as swm from './swm';  // XXX local dev only TEMPORARY
+import * as swm from './swm'; // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
 const defaultAppOrigin = 'http://localhost:8001';
@@ -77,9 +77,13 @@ function Ehr() {
   }
 
   function uiDone() {
-    prepopulate(swm.getUiDoneResponse(
-      message.messageId, 'success', 'EHR hid the app iframe'
-    ));
+    prepopulate(
+      swm.getUiDoneResponse(
+        message.messageId,
+        'success',
+        'EHR hid the app iframe',
+      ),
+    );
   }
 
   function uiLaunchActivity() {
@@ -89,8 +93,8 @@ function Ehr() {
       swm.getUiLaunchActivityResponse(
         message.messageId,
         'success',
-        `EHR completed activity "${activity}"`
-      )
+        `EHR completed activity "${activity}"`,
+      ),
     );
   }
 
@@ -100,31 +104,37 @@ function Ehr() {
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
-    const outcome = undefined;  // TODO: populate an OperationOutcome
+    const outcome = undefined; // TODO: populate an OperationOutcome
     prepopulate(
       swm.getScratchpadCreateResponse(
-        message.messageId, '200 OK', location, outcome
-      )
+        message.messageId,
+        '200 OK',
+        location,
+        outcome,
+      ),
     );
   }
 
   function scratchpadDelete() {
     const location = message?.payload?.location ?? 'Encounter';
-    const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
-    const outcome = undefined;  // TODO: add an OperationOutcome
-    prepopulate(swm.getScratchpadDeleteResponse(
-      message.messageId, status, outcome
-    ));
+    const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
+    const outcome = undefined; // TODO: add an OperationOutcome
+    prepopulate(
+      swm.getScratchpadDeleteResponse(message.messageId, status, outcome),
+    );
   }
 
   function scratchpadUpdate() {
     const location = message?.payload?.location ?? 'Encounter';
-    const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
-    const outcome = undefined;  // TODO: add an OperationOutcome
+    const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
+    const outcome = undefined; // TODO: add an OperationOutcome
     prepopulate(
       swm.getScratchpadUpdateResponse(
-        message.messageId, status, location, outcome
-      )
+        message.messageId,
+        status,
+        location,
+        outcome,
+      ),
     );
   }
 
@@ -163,30 +173,27 @@ function Ehr() {
     <div className="Ehr">
       <header className="Ehr-header">
         <p>
-          Mock EHR
-          &nbsp;
-          <a 
+          Mock EHR &nbsp;
+          <a
             target="_blank"
             rel="noreferrer noopener"
             href="https://build.fhir.org/ig/HL7/smart-web-messaging/"
-          >SMART Web Messaging</a>
-          &nbsp;
-          Demo App
+          >
+            SMART Web Messaging
+          </a>
+          &nbsp; Demo App
         </p>
-        <button
-          className="config-button"
-          onClick={openConfig}
-        >configure</button>
+        <button className="config-button" onClick={openConfig}>
+          configure
+        </button>
       </header>
       <main className="Site-content">
-
         <dialog className="config-panel" id="config-panel">
           <div className="config-header">
             <div>EHR Settings</div>
-            <button
-              className="close-config"
-              onClick={closeConfig}
-            >Close</button>
+            <button className="close-config" onClick={closeConfig}>
+              Close
+            </button>
           </div>
           <div className="config-settings">
             <div className="config-field">
@@ -227,20 +234,29 @@ function Ehr() {
         </div>
         <div className="message-panel">
           <div className="from-app">
-            <p><b><i>Read-only</i></b> SMART Web Message <i>received</i> from App:</p>
+            <p>
+              <b>
+                <i>Read-only</i>
+              </b>{' '}
+              SMART Web Message <i>received</i> from App:
+            </p>
             <textarea
               disabled
               className="App-message"
               value={messageFromApp}
               readOnly={true}
             />
-            <button
-              className="copy-response"
-              onClick={copyResponseToClipboard}
-            >Copy to clipboard</button>
+            <button className="copy-response" onClick={copyResponseToClipboard}>
+              Copy to clipboard
+            </button>
           </div>
           <div className="to-send">
-            <p><b><i>Editable</i></b> SMART Web Message <i>response</i> to send to App:</p>
+            <p>
+              <b>
+                <i>Editable</i>
+              </b>{' '}
+              SMART Web Message <i>response</i> to send to App:
+            </p>
             <textarea
               id="responseText"
               className="App-message"
@@ -251,14 +267,14 @@ function Ehr() {
               className="send-button"
               onClick={sendResponse}
               disabled={!isResponseSendable()}
-            >SEND</button>
+            >
+              SEND
+            </button>
           </div>
         </div>
         <div className="Ehr-scratchpad">
           <p>EHR scratchpad</p>
-          <pre id="scratchpad">{
-            JSON.stringify(getScratchpad(), null, 2)
-          }</pre>
+          <pre id="scratchpad">{JSON.stringify(getScratchpad(), null, 2)}</pre>
         </div>
         <div className="Embedded-app">
           <iframe
@@ -267,17 +283,15 @@ function Ehr() {
             allow="clipboard-write"
             onLoad={() => {
               sessionHandles.set(
-                sessionHandle, 
-                document.getElementById('app-iframe').contentWindow
-              )
+                sessionHandle,
+                document.getElementById('app-iframe').contentWindow,
+              );
             }}
           ></iframe>
         </div>
       </main>
       <footer className="Ehr-footer">
-        <p>
-          EHR Footer
-        </p>
+        <p>EHR Footer</p>
       </footer>
     </div>
   );

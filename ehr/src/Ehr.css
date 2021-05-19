@@ -151,15 +151,6 @@ textarea {
   font-size: calc(10px + 1vmin);
   margin: 0.4rem;
 }
-.Ehr pre {
-  margin: 2.0rem;
-  color: #c0ff33;
-  background: #FFF3;
-  padding: 4px 8px;
-  font-size: calc(10px + 1vmin);
-  border-radius: 4px;
-  text-align: left;
-}
 
 .Ehr-scratchpad {
   background-color: #282c66;
@@ -167,6 +158,15 @@ textarea {
   color: lightblue;
   max-height: 25vh;
   overflow: auto;
+}
+
+.Ehr-scratchpad pre {
+  margin: 1.0rem;
+  color: #c0ff33;
+  background: #FFF3;
+  padding: 4px 8px;
+  font-size: calc(10px + 1vmin);
+  border-radius: 4px;
 }
 
 .Ehr-footer {
