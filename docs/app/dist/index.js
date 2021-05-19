@@ -7143,6 +7143,9 @@ function sendMessage(client, message) {
   checkMessageType(message);
   checkClientStructure(client);
   const targetOrigin = client.tokenResponse.smart_web_messaging_origin;
+  if (targetOrigin !== new URL(targetOrigin).origin) {
+    console.error(`Invalid message origin: '${targetOrigin}'`);
+  }
   if (window.parent) {
     window.parent.postMessage(message, targetOrigin);
   } else if (window.opener) {
@@ -7153,14 +7156,16 @@ function sendMessage(client, message) {
 }
 
 // build/app/dist/App.js
+var defaultOrigin = "https://barabo.github.io";
+var defaultHandle = "RXhhbXBsZSBoYW5kbGUK";
 var mockClient = {
   tokenResponse: {
     access_token: "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
     token_type: "bearer",
     expires_in: 3600,
     scope: "patient/Patient.read messaging/ui.launchActivity",
-    smart_web_messaging_origin: "http://localhost:8000",
-    smart_web_messaging_handle: "RXhhbXBsZSBoYW5kbGUK",
+    smart_web_messaging_origin: defaultOrigin,
+    smart_web_messaging_handle: defaultHandle,
     state: "c3RhdGUgZXhhbXBsZSEK"
   }
 };
@@ -7189,6 +7194,9 @@ function App() {
     document.getElementById("config-panel").close();
   }
   function configSave() {
+    if (targetOrigin !== new URL(targetOrigin).origin) {
+      console.error("Invalid origin", targetOrigin);
+    }
     mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
     mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
   }
