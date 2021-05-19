@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './Ehr.css';
 import * as swm from './swm';  // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
@@ -30,18 +30,21 @@ function Ehr() {
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
 
   // Enable the postMessage API for App messages to the EHR.
-  swm.enablePostMessage(appOrigin, (m) => {
-    // Only respond to messages with recognized messaging handles.
-    if (sessionHandles.has(m.messagingHandle)) {
-      setResponse('');
-      setMessage(m);
-      setMessageFromApp(JSON.stringify(m, null, 2));
-      // TODO: disable all the buttons upon receipt of a valid message??
-      // BONUS: highlight and enable only the button for the expected response type
-    } else {
-      console.error(`Unknown messaging handle: ${m.messagingHandle}`);
-    }
-  });
+  const init = useCallback(() => {
+    swm.enablePostMessage(appOrigin, (m) => {
+      // Only respond to messages with recognized messaging handles.
+      if (sessionHandles.has(m.messagingHandle)) {
+        setResponse('');
+        setMessage(m);
+        setMessageFromApp(JSON.stringify(m, null, 2));
+        // TODO: disable all the buttons upon receipt of a valid message??
+        // BONUS: highlight and enable only the button for the expected response type
+      } else {
+        console.error(`Unknown messaging handle: ${m.messagingHandle}`);
+      }
+    });
+  }, [appOrigin, sessionHandle]);
+  useEffect(init, [init]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();

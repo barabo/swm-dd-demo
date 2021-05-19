@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import * as swm from './swm';  // XXX: local dev
 //import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
@@ -20,7 +20,6 @@ const mockClient = {
 function App() {
   const [message, setMessage] = useState("{}");
   const [response, setResponse] = useState("");
-  // TODO: allow the UI to modify these values from the SMART launch client
   const [messageHandle, setMessageHandle] = useState(
     mockClient.tokenResponse.smart_web_messaging_handle
   );
@@ -29,9 +28,12 @@ function App() {
   );
 
   // Enable the postMessage API for EHR responses to the App.
-  swm.enablePostMessage(targetOrigin, (response) => {
-    setResponse(JSON.stringify(response, null, 2));
-  });
+  const init = useCallback(() => {
+    swm.enablePostMessage(targetOrigin, (r) => {
+      setResponse(JSON.stringify(r, null, 2));
+    });
+  }, [targetOrigin]);
+  useEffect(init, [init]);
   
   function openConfig() {
     document.getElementById('config-panel').showModal();
