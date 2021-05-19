@@ -31,12 +31,16 @@ function Ehr() {
 
   // Enable the postMessage API for App messages to the EHR.
   swm.enablePostMessage(appOrigin, (m) => {
-    setResponse('');
-    setMessage(m);
-    setMessageFromApp(JSON.stringify(m, null, 2));
-    // TODO: disable all the buttons upon receipt of a valid message??
-    // BONUS: highlight and enable only the button for the expected response type
-    // TODO: check the message handle for a known session handle?
+    // Only respond to messages with recognized messaging handles.
+    if (sessionHandles.has(m.messagingHandle)) {
+      setResponse('');
+      setMessage(m);
+      setMessageFromApp(JSON.stringify(m, null, 2));
+      // TODO: disable all the buttons upon receipt of a valid message??
+      // BONUS: highlight and enable only the button for the expected response type
+    } else {
+      console.error(`Unknown messaging handle: ${m.messagingHandle}`);
+    }
   });
 
   function openConfig() {
@@ -61,24 +65,24 @@ function Ehr() {
     setResponse(e.target.value);
   }
 
-  function stringify(message) {
+  function prepopulate(message) {
     setResponse(JSON.stringify(message, null, 2));
   }
 
   function handshake() {
-    // TODO: insert the session handle into sessionHandles here???
-    stringify(swm.getHandshakeResponse(message.messageId));
+    prepopulate(swm.getHandshakeResponse(message.messageId));
   }
 
   function uiDone() {
-    stringify(swm.getUiDoneResponse(
+    prepopulate(swm.getUiDoneResponse(
       message.messageId, 'success', 'EHR hid the app iframe'
     ));
   }
 
   function uiLaunchActivity() {
     const activity = message?.payload?.activityType ?? 'order-review';
-    stringify(
+    // TODO: don't default to order-review.  Instead, display a failure if no activity type is there.
+    prepopulate(
       swm.getUiLaunchActivityResponse(
         message.messageId,
         'success',
@@ -88,12 +92,13 @@ function Ehr() {
   }
 
   function scratchpadCreate() {
+    // TODO: don't default to Encounter - it's an error if there's no resourceType.
     const resourceType = message.payload?.resource?.resourceType ?? 'Encounter';
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
     const outcome = undefined;  // TODO: populate an OperationOutcome
-    stringify(
+    prepopulate(
       swm.getScratchpadCreateResponse(
         message.messageId, '200 OK', location, outcome
       )
@@ -104,7 +109,7 @@ function Ehr() {
     const location = message?.payload?.location ?? 'Encounter';
     const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
     const outcome = undefined;  // TODO: add an OperationOutcome
-    stringify(swm.getScratchpadDeleteResponse(
+    prepopulate(swm.getScratchpadDeleteResponse(
       message.messageId, status, outcome
     ));
   }
@@ -113,7 +118,7 @@ function Ehr() {
     const location = message?.payload?.location ?? 'Encounter';
     const status = scratchpad.has(location) && '200 OK' || '404 NOT FOUND';
     const outcome = undefined;  // TODO: add an OperationOutcome
-    stringify(
+    prepopulate(
       swm.getScratchpadUpdateResponse(
         message.messageId, status, location, outcome
       )
@@ -127,10 +132,7 @@ function Ehr() {
   }
 
   function isResponseSendable() {
-    if (!message) {
-      return false;
-    }
-    if (!response) {
+    if (!message || !response) {
       return false;
     }
     const r = JSON.parse(response);
