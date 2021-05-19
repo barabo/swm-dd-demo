@@ -1,9 +1,9 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    public: { url: '/', static: true },
-    lib: { url: '/dist' },
-    src: { url: '/dist' },
+    public: { url: '/swm-c10n-demo/', static: true },
+    lib: { url: '/swm-c10n-demo/dist' },
+    src: { url: '/swm-c10n-demo/dist' },
   },
   plugins: ['@snowpack/plugin-react-refresh', '@snowpack/plugin-dotenv'],
   routes: [
