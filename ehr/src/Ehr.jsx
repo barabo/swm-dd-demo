@@ -3,7 +3,8 @@ import './Ehr.css';
 import * as swm from './swm'; // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
-const defaultAppOrigin = 'http://localhost:8001';
+const defaultAppUrl = 'https://barabo.github.io/swm-c10n-demo/app/';
+const defaultAppOrigin = new URL(defaultAppUrl).origin;
 const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
 
 /**
@@ -26,6 +27,7 @@ function Ehr() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
   const [messageFromApp, setMessageFromApp] = useState('');
+  const [appUrl, setAppUrl] = useState(defaultAppUrl);
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
 
@@ -54,8 +56,16 @@ function Ehr() {
     setSessionHandle(e.target.value);
   }
 
-  function updateAppOrigin(e) {
-    setAppOrigin(e.target.value);
+  function updateAppUrl(e) {
+    const url = e.target.value;
+    setAppUrl(url);
+    try {
+      if (new URL(url).origin !== appOrigin) {
+        setAppOrigin(new URL(url).origin);
+      }
+    } catch {
+      // Ignore
+    }
   }
 
   function closeConfig() {
@@ -210,13 +220,13 @@ function Ehr() {
             </div>
             <div className="config-field">
               <div className="config-label">
-                <p>App Origin</p>
+                <p>App URL</p>
               </div>
               <div className="config-text-value">
                 <input
                   type="text"
-                  value={appOrigin}
-                  onChange={updateAppOrigin}
+                  value={appUrl}
+                  onChange={updateAppUrl}
                 ></input>
               </div>
             </div>
@@ -279,7 +289,7 @@ function Ehr() {
         <div className="Embedded-app">
           <iframe
             id="app-iframe"
-            src={appOrigin}
+            src={appUrl}
             allow="clipboard-write"
             onLoad={() => {
               sessionHandles.set(
