@@ -36,7 +36,7 @@
   top: 0;
   right: 0;
   padding: 2px;
-  margin: 1vmin;
+  margin: 1.5vmin;
 }
 .config-panel {
   background-color: lightpink;
@@ -49,6 +49,10 @@
   justify-content: space-between;
   display: flex;
   padding-bottom: 1vmin;
+  font-size: 2vmax;
+}
+.close-config {
+  min-width: 3vmax;
 }
 .config-settings {
   display: flex;
@@ -57,19 +61,18 @@
 }
 .config-field {
   display: flex;
-  flex-direction: row;
   margin-bottom: 5px;
   justify-content: space-between;
 }
-.config-field p {
+.config-field .config-label p {
   color: black;
-  font-size: calc(6px + 1vmin);
+  font-size: 1vmax;
   font-weight: bold;
 }
 .config-field input {
   font-size: calc(6px + 1vmin);
-  min-width: 250px;
-  min-height: 30px;
+  min-width: 19vmax;
+  min-height: 2vmax;
 }
 
 .App main {

@@ -11,7 +11,7 @@
   top: 0;
   right: 0;
   padding: 2px;
-  margin:1.5vmin;
+  margin: 1.5vmin;
 }
 .config-panel {
   background-color: lightpink;
@@ -26,6 +26,9 @@
   padding-bottom: 1vmin;
   font-size: 2vmax;
 }
+.close-config {
+  min-width: 3vmax;
+}
 .config-settings {
   display: flex;
   flex-direction: column;
@@ -33,7 +36,6 @@
 }
 .config-field {
   display: flex;
-  flex-direction: row;
   margin-bottom: 5px;
   justify-content: space-between;
 }
@@ -44,7 +46,7 @@
 }
 .config-field input {
   font-size: calc(6px + 1vmin);
-  min-width: 20vmax;
+  min-width: 19vmax;
   min-height: 2vmax;
 }
 
@@ -136,7 +138,7 @@ textarea {
 .Ehr p {
   color: inherit;
   font-size: calc(10px + 1vmin);
-  margin: 0.8rem;
+  margin: 0.4rem;
 }
 .Ehr pre {
   margin: 2.0rem;
@@ -154,11 +156,6 @@ textarea {
   color: lightblue;
   max-height: 25vh;
   overflow: auto;
-}
-.Ehr p {
-  color: inherit;
-  font-size: calc(10px + 1vmin);
-  margin: 0.8rem;
 }
 
 .Ehr-header {
