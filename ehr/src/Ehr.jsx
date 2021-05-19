@@ -49,7 +49,7 @@ function Ehr() {
         setMessageFromApp(JSON.stringify(m, null, 2));
         // TODO: disable all the buttons upon receipt of a valid message??
         // BONUS: highlight and enable only the button for the expected response type
-      } else {
+      } else if (m.messagingHandle) {
         console.error(`Unknown messaging handle: ${m.messagingHandle}`);
       }
     });
