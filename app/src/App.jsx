@@ -1,30 +1,30 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
-import * as swm from './swm';  // XXX: local dev
+import * as swm from './swm'; // XXX: local dev
 //import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
 
 // TODO: set up a launch url and launch as a real app would.
 // TODO: move this mock client into the swm lib as an example.
 const mockClient = {
   tokenResponse: {
-    "access_token": "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
-    "token_type": "bearer",
-    "expires_in": 3600,
-    "scope": "patient/Patient.read messaging/ui.launchActivity",
-    "smart_web_messaging_origin": 'http://localhost:8000',
-    "smart_web_messaging_handle": "RXhhbXBsZSBoYW5kbGUK",
-    "state": "c3RhdGUgZXhhbXBsZSEK",
-  }
-}
+    access_token: 'VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK',
+    token_type: 'bearer',
+    expires_in: 3600,
+    scope: 'patient/Patient.read messaging/ui.launchActivity',
+    smart_web_messaging_origin: 'http://localhost:8000',
+    smart_web_messaging_handle: 'RXhhbXBsZSBoYW5kbGUK',
+    state: 'c3RhdGUgZXhhbXBsZSEK',
+  },
+};
 
 function App() {
   const [message, setMessage] = useState('{}');
   const [response, setResponse] = useState('');
   const [messageHandle, setMessageHandle] = useState(
-    mockClient.tokenResponse.smart_web_messaging_handle
+    mockClient.tokenResponse.smart_web_messaging_handle,
   );
   const [targetOrigin, setTargetOrigin] = useState(
-    mockClient.tokenResponse.smart_web_messaging_origin
+    mockClient.tokenResponse.smart_web_messaging_origin,
   );
 
   // Enable the postMessage API for EHR responses to the App.
@@ -34,7 +34,7 @@ function App() {
     });
   }, [targetOrigin]);
   useEffect(init, [init]);
-  
+
   function openConfig() {
     document.getElementById('config-panel').showModal();
   }
@@ -78,22 +78,18 @@ function App() {
 
   function uiLaunchActivity() {
     stringify(
-      swm.getUiLaunchActivityMessage(
-        mockClient, 'problem-review', {
-          'problemLocation': 'Condition/123',
-        }
-      )
+      swm.getUiLaunchActivityMessage(mockClient, 'problem-review', {
+        problemLocation: 'Condition/123',
+      }),
     );
   }
 
   function scratchpadCreate() {
     stringify(
-      swm.getScratchpadCreateMessage(
-        mockClient, {
-          'resourceType': 'ServiceRequest',
-          'status': 'draft',
-        }
-      )
+      swm.getScratchpadCreateMessage(mockClient, {
+        resourceType: 'ServiceRequest',
+        status: 'draft',
+      }),
     );
   }
 
@@ -106,14 +102,12 @@ function App() {
   function scratchpadUpdate() {
     // TODO: read the contents of the scratchpad to set the resource?
     const resource = {
-      'resourceType': 'MedicationRequest',
-      'id': '123',
-      'status': 'draft',
+      resourceType: 'MedicationRequest',
+      id: '123',
+      status: 'draft',
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    stringify(
-      swm.getScratchpadUpdateMessage(mockClient, resource, location)
-    );
+    stringify(swm.getScratchpadUpdateMessage(mockClient, resource, location));
   }
 
   function sendMessage() {
@@ -146,19 +140,17 @@ function App() {
     <div className="App">
       <header className="App-header">
         <p>{appTitle}</p>
-        <button
-          className="config-button"
-          onClick={openConfig}
-        >configure</button>
+        <button className="config-button" onClick={openConfig}>
+          configure
+        </button>
       </header>
       <main className="App-main">
         <dialog className="config-panel" id="config-panel">
           <div className="config-header">
             <div>App Settings</div>
-            <button
-              className="close-config"
-              onClick={closeConfig}
-            >Close</button>
+            <button className="close-config" onClick={closeConfig}>
+              Close
+            </button>
           </div>
           <div className="config-settings">
             <div className="config-field">
@@ -198,7 +190,12 @@ function App() {
         </div>
         <div className="message-panel">
           <div className="to-send">
-            <p><b><i>Editable</i></b> SMART Web Message to send to EHR:</p>
+            <p>
+              <b>
+                <i>Editable</i>
+              </b>{' '}
+              SMART Web Message to send to EHR:
+            </p>
             <textarea
               className="App-message"
               value={message}
@@ -208,29 +205,37 @@ function App() {
               className="send-button"
               onClick={sendMessage}
               disabled={window.parent === window.self}
-            >SEND</button>
+            >
+              SEND
+            </button>
           </div>
           <div className="from-ehr">
-            <p><b><i>Read-only</i></b> SMART Web Message EHR response:</p>
+            <p>
+              <b>
+                <i>Read-only</i>
+              </b>{' '}
+              SMART Web Message EHR response:
+            </p>
             <textarea
               disabled={true}
               className="App-message"
               value={response}
               readOnly={true}
             />
-            <button
-              className="copy-response"
-              onClick={copyResponseToClipboard}
-            >Copy to clipboard</button>
+            <button className="copy-response" onClick={copyResponseToClipboard}>
+              Copy to clipboard
+            </button>
           </div>
         </div>
       </main>
       <footer className="App-footer">
-        <a 
+        <a
           target="_blank"
-          rel="noreferrer noopener"      
-          href='https://tinyurl.com/swm-c10n-code'
-        >https://tinyurl.com/swm-c10n-code</a>
+          rel="noreferrer noopener"
+          href="https://tinyurl.com/swm-c10n-code"
+        >
+          https://tinyurl.com/swm-c10n-code
+        </a>
       </footer>
     </div>
   );
