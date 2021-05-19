@@ -1,9 +1,12 @@
+/**
+ * // OOF: https://github.com/snowpackjs/snowpack/discussions/2419
+ */
 /** @type {import("snowpack").SnowpackUserConfig } */
 module.exports = {
   mount: {
-    public: { url: '/', static: true },
-    lib: { url: '/dist' },
-    src: { url: '/dist' },
+    public: { url: '/ehr', static: true },
+    lib: { url: '/ehr/dist' },
+    src: { url: '/ehr/dist' },
   },
   plugins: ['@snowpack/plugin-react-refresh', '@snowpack/plugin-dotenv'],
   routes: [
@@ -11,8 +14,7 @@ module.exports = {
     // {"match": "routes", "src": ".*", "dest": "/index.html"},
   ],
   optimize: {
-    /* Example: Bundle your final build: */
-    // "bundle": true,
+    "bundle": true,
   },
   packageOptions: {
     /* ... */
@@ -21,6 +23,6 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
-    /* ... */
+    baseUrl: '/swm-c10n-demo',
   },
 };

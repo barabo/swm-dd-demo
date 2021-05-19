@@ -9,12 +9,20 @@ const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
 
 /**
  * Maps scratchpad 'locations' to objects.
- * TODO: does an update to this trigger a refresh?
  */
 const scratchpad = new Map();
+
+/**
+ * Maps ResourceTypes to the last known int ID used for that type.  This helps
+ * guarantee that a scratchpad.create message does not collide with an existing
+ * Resource in the scratchpad.
+ */
 const resourceIds = new Map();
+
+/**
+ * Maps the iframe sessionHandle to the app contentWindow object.
+ */
 const sessionHandles = new Map();
-// map the session handles to the window object?
 
 /**
  * @returns The contents of the EHR scratchpad.
