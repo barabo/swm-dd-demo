@@ -1,13 +1,163 @@
+/* build/app/dist/index.css */
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Roboto",
+    "Oxygen",
+    "Ubuntu",
+    "Cantarell",
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family:
+    source-code-pro,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Courier New",
     monospace;
+}
+
+/* build/app/dist/App.css */
+.App {
+  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.App code {
+  background: #FFF3;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.App p {
+  margin: 0.4rem;
+  color: #cafe;
+  font-size: calc(10px + 2vmin);
+  text-align: left;
+}
+.App pre {
+  color: #c0ff33;
+  background: #FFF3;
+  padding: 4px 8px;
+  border-radius: 4px;
+  text-align: left;
+}
+.App-header {
+  background-color: #caf3;
+  display: flex;
+  flex-direction: row;
+  font-size: calc(10px + 2vmin);
+  color: #cafe;
+}
+.config-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 2px;
+  margin: 1.5vmin;
+}
+.config-panel {
+  background-color: lightpink;
+  border-radius: 1vmin;
+  border-color: purple;
+  height: 30vh;
+  width: 30vw;
+}
+.config-header {
+  justify-content: space-between;
+  display: flex;
+  padding-bottom: 1vmin;
+  font-size: 2vmax;
+}
+.close-config {
+  min-width: 3vmax;
+}
+.config-settings {
+  display: flex;
+  flex-direction: column;
+  margin: 1vmin;
+}
+.config-field {
+  display: flex;
+  margin-bottom: 5px;
+  justify-content: space-between;
+}
+.config-field .config-label p {
+  color: black;
+  font-size: 1vmax;
+  font-weight: bold;
+}
+.config-field input {
+  font-size: calc(6px + 1vmin);
+  min-width: 19vmax;
+  min-height: 2vmax;
+}
+.App main {
+  flex: 1;
+  height: 100vh;
+}
+.App-buttons {
+  background: lightgray;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  padding: 2px;
+}
+.App-buttons p {
+  color: black;
+  font-size: calc(10px + 1vmin);
+}
+.App-buttons button {
+  margin: 3px;
+}
+.message-panel {
+  display: flex;
+  height: 75vh;
+  margin: 0.7rem;
+}
+.message-panel p {
+  font-size: calc(10px + 1vmin);
+  color: #61dafb;
+}
+.message-panel div {
+  padding: 1vw 1vw 2vw 2vw;
+  border-radius: 4px;
+}
+.to-send {
+  display: flex;
+  flex-direction: column;
+  background-color: lightslategrey;
+}
+.send-button {
+  background-color: rgba(8, 200, 8, 0.329);
+}
+.from-ehr {
+  display: flex;
+  flex-direction: column;
+}
+.App-message {
+  width: 45vw;
+  display: flex;
+  height: 60vh;
+  flex: 1;
+}
+.App-footer {
+  background-color: #caf3;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: #cafe;
+}
+.App-footer a {
+  color: #61dafb;
 }

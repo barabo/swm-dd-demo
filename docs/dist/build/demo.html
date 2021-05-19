@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Demo Page for SWM client library" />
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Demo Page for SWM client library">
     <title>SWM Demo App</title>
   </head>
 
   <body>
     <h1>SWM Library Examples</h1>
-    <pre>
-      import * as swm from './swm';
+    <pre>      import * as swm from './swm';
 
       // This is a mock, slimmed-down version of a SMART launch client.
       const client = {
@@ -21,22 +18,164 @@
       }
     </pre>
     <h2>Example handshake message</h2>
-    <pre>
-      swm.getHandshakeMessage(client) => {
+    <pre>      swm.getHandshakeMessage(client) => {
         TODO
       }
     </pre>
-  </body>
+  
 
-  <script type="module">
-    import * as swm from './swm.js';
-    const client = {
-      'tokenResponse': {
-        'smart_web_messaging_handle': 'session1handle',
-        'smart_web_messaging_origin': 'http://localhost:3333'
-      }
+  <script type="module">// build/app/dist/build/_snowpack/pkg/uuid.js
+function createCommonjsModule(fn, basedir, module) {
+  return module = {
+    path: basedir,
+    exports: {},
+    require: function(path, base) {
+      return commonjsRequire(path, base === void 0 || base === null ? module.path : base);
     }
+  }, fn(module, module.exports), module.exports;
+}
+function commonjsRequire() {
+  throw new Error("Dynamic requires are not currently supported by @rollup/plugin-commonjs");
+}
+var rngBrowser = createCommonjsModule(function(module) {
+  var getRandomValues = typeof crypto != "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto) || typeof msCrypto != "undefined" && typeof window.msCrypto.getRandomValues == "function" && msCrypto.getRandomValues.bind(msCrypto);
+  if (getRandomValues) {
+    var rnds8 = new Uint8Array(16);
+    module.exports = function whatwgRNG() {
+      getRandomValues(rnds8);
+      return rnds8;
+    };
+  } else {
+    var rnds = new Array(16);
+    module.exports = function mathRNG() {
+      for (var i = 0, r; i < 16; i++) {
+        if ((i & 3) === 0)
+          r = Math.random() * 4294967296;
+        rnds[i] = r >>> ((i & 3) << 3) & 255;
+      }
+      return rnds;
+    };
+  }
+});
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 256).toString(16).substr(1);
+}
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return [
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]],
+    "-",
+    bth[buf[i++]],
+    bth[buf[i++]],
+    "-",
+    bth[buf[i++]],
+    bth[buf[i++]],
+    "-",
+    bth[buf[i++]],
+    bth[buf[i++]],
+    "-",
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]],
+    bth[buf[i++]]
+  ].join("");
+}
+var bytesToUuid_1 = bytesToUuid;
+var _nodeId;
+var _clockseq;
+var _lastMSecs = 0;
+var _lastNSecs = 0;
+function v1(options, buf, offset) {
+  var i = buf && offset || 0;
+  var b = buf || [];
+  options = options || {};
+  var node = options.node || _nodeId;
+  var clockseq = options.clockseq !== void 0 ? options.clockseq : _clockseq;
+  if (node == null || clockseq == null) {
+    var seedBytes = rngBrowser();
+    if (node == null) {
+      node = _nodeId = [
+        seedBytes[0] | 1,
+        seedBytes[1],
+        seedBytes[2],
+        seedBytes[3],
+        seedBytes[4],
+        seedBytes[5]
+      ];
+    }
+    if (clockseq == null) {
+      clockseq = _clockseq = (seedBytes[6] << 8 | seedBytes[7]) & 16383;
+    }
+  }
+  var msecs = options.msecs !== void 0 ? options.msecs : new Date().getTime();
+  var nsecs = options.nsecs !== void 0 ? options.nsecs : _lastNSecs + 1;
+  var dt = msecs - _lastMSecs + (nsecs - _lastNSecs) / 1e4;
+  if (dt < 0 && options.clockseq === void 0) {
+    clockseq = clockseq + 1 & 16383;
+  }
+  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === void 0) {
+    nsecs = 0;
+  }
+  if (nsecs >= 1e4) {
+    throw new Error("uuid.v1(): Can't create more than 10M uuids/sec");
+  }
+  _lastMSecs = msecs;
+  _lastNSecs = nsecs;
+  _clockseq = clockseq;
+  msecs += 122192928e5;
+  var tl = ((msecs & 268435455) * 1e4 + nsecs) % 4294967296;
+  b[i++] = tl >>> 24 & 255;
+  b[i++] = tl >>> 16 & 255;
+  b[i++] = tl >>> 8 & 255;
+  b[i++] = tl & 255;
+  var tmh = msecs / 4294967296 * 1e4 & 268435455;
+  b[i++] = tmh >>> 8 & 255;
+  b[i++] = tmh & 255;
+  b[i++] = tmh >>> 24 & 15 | 16;
+  b[i++] = tmh >>> 16 & 255;
+  b[i++] = clockseq >>> 8 | 128;
+  b[i++] = clockseq & 255;
+  for (var n = 0; n < 6; ++n) {
+    b[i + n] = node[n];
+  }
+  return buf ? buf : bytesToUuid_1(b);
+}
+var v1_1 = v1;
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+  if (typeof options == "string") {
+    buf = options === "binary" ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+  var rnds = options.random || (options.rng || rngBrowser)();
+  rnds[6] = rnds[6] & 15 | 64;
+  rnds[8] = rnds[8] & 63 | 128;
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+  return buf || bytesToUuid_1(rnds);
+}
+var v4_1 = v4;
+var uuid = v4_1;
+uuid.v1 = v1_1;
+uuid.v4 = v4_1;
+var uuid_1 = uuid;
+var v4$1 = uuid_1.v4;
 
-  </script>
+// build/app/dist/build/swm.js
+var expectedMessageType = Object.prototype.toString.call({});
+//# sourceMappingURL=demo.html.inline.0.js.map
+</script>
 
-</html>
+
+</body></html>
