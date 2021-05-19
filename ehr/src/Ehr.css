@@ -66,6 +66,7 @@
   font-family: monospace;
   width:100%;
   min-height: 2vmax;
+  padding: 2px;
 }
 
 .Site-content {
