@@ -3,7 +3,7 @@ import './App.css';
 import * as swm from './swm';  // XXX: local dev
 //import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
 
-// TODO: detect the presence of a SMART client and use that instead
+// TODO: set up a launch url and launch as a real app would.
 // TODO: move this mock client into the swm lib as an example.
 const mockClient = {
   tokenResponse: {
@@ -18,8 +18,8 @@ const mockClient = {
 }
 
 function App() {
-  const [message, setMessage] = useState("{}");
-  const [response, setResponse] = useState("");
+  const [message, setMessage] = useState('{}');
+  const [response, setResponse] = useState('');
   const [messageHandle, setMessageHandle] = useState(
     mockClient.tokenResponse.smart_web_messaging_handle
   );
