@@ -7157,7 +7157,7 @@ function Ehr() {
         setResponse("");
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
-      } else {
+      } else if (m.messagingHandle) {
         console.error(`Unknown messaging handle: ${m.messagingHandle}`);
       }
     });
