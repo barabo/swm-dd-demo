@@ -3,7 +3,8 @@ import './Ehr.css';
 import * as swm from './swm'; // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
-const defaultAppUrl = 'https://barabo.github.io/swm-c10n-demo/app/';
+//const defaultAppUrl = 'https://barabo.github.io/swm-c10n-demo/app/';
+const defaultAppUrl = 'http://localhost:8001/app/';
 const defaultAppOrigin = new URL(defaultAppUrl).origin;
 const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
 
