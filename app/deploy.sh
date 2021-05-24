@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Publishes a new instance of the app demo.
+#
+set -e
+set -u
+
+echo "Checking lint..."
+npm run lint
+
+echo "Copying built page into /docs..."
+cp -av build/app ../docs
+
+echo "Inserting the missing URL paths in /docs/app/index.html..."
+sed -i .bak -E '/ (href|src)=.\/app/s:"/app:"/swm-c10n-demo/app:' \
+  ../docs/app/index.html \
+  && rm -f ../docs/app/index.html.bak
+
+echo "Publishing built app to GHPages..."
+git add ../docs/app
+git commit -m "auto deployed by app/deploy.sh"
+git push
