@@ -7058,6 +7058,11 @@ function v4(options, buf, offset) {
 }
 
 // build/app/dist/swm.js
+function checkHasListener() {
+  if (!_internal.callback || !_internal.targetOrigin) {
+    console.error("No listener configured - unable to receive from target!");
+  }
+}
 var expectedMessageType = Object.prototype.toString.call({});
 function checkMessageType(message) {
   const type = Object.prototype.toString.call(message);
@@ -7078,14 +7083,25 @@ function checkClientStructure(client) {
     console.error("SMART client is missing a smart_web_messaging_origin launch attribute!");
   }
 }
-function enablePostMessage(targetOrigin, callback) {
-  const messageEventHandler = function(e) {
+var _internal = {
+  targetOrigin: void 0,
+  callback: void 0
+};
+function postMessageHandler(e) {
+  const targetOrigin = _internal.targetOrigin;
+  const messageCallback = _internal.callback;
+  if (targetOrigin && messageCallback) {
     if (e.origin === targetOrigin && e.data) {
       checkMessageType(e.data);
-      callback(e.data);
+      messageCallback(e.data);
     }
-  };
-  window.addEventListener("message", messageEventHandler, false);
+  }
+}
+function enablePostMessage(targetOrigin, callback) {
+  console.log("postMessage ENABLED");
+  _internal.targetOrigin = targetOrigin;
+  _internal.callback = callback;
+  window.addEventListener("message", postMessageHandler, false);
 }
 function getMessage(messageType, client) {
   if (!messageType) {
@@ -7140,6 +7156,7 @@ function getScratchpadDeleteMessage(client, location) {
   };
 }
 function sendMessage(client, message) {
+  checkHasListener();
   checkMessageType(message);
   checkClientStructure(client);
   const targetOrigin = client.tokenResponse.smart_web_messaging_origin;
@@ -7156,7 +7173,7 @@ function sendMessage(client, message) {
 }
 
 // build/app/dist/App.js
-var defaultOrigin = "https://barabo.github.io";
+var defaultOrigin = "http://localhost:8000";
 var defaultHandle = "RXhhbXBsZSBoYW5kbGUK";
 var mockClient = {
   tokenResponse: {
