@@ -191,8 +191,9 @@ textarea {
   color: #c0ff33;
   background: #FFF3;
   padding: 4px 8px;
-  font-size: calc(10px + 1vmin);
+  font-size: calc(1.5vh);
   border-radius: 4px;
+  width: 100%;
 }
 
 .Ehr-footer {
