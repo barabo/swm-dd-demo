@@ -7058,6 +7058,11 @@ function v4(options, buf, offset) {
 }
 
 // build/ehr/dist/swm.js
+function checkHasListener() {
+  if (!_internal.callback || !_internal.targetOrigin) {
+    console.error("No listener configured - unable to receive from target!");
+  }
+}
 var expectedMessageType = Object.prototype.toString.call({});
 function checkMessageType(message) {
   const type = Object.prototype.toString.call(message);
@@ -7065,14 +7070,25 @@ function checkMessageType(message) {
     console.error(`expected a message of type "${expectedMessageType}", got "${type}"!`);
   }
 }
-function enablePostMessage(targetOrigin, callback) {
-  const messageEventHandler = function(e) {
+var _internal = {
+  targetOrigin: void 0,
+  callback: void 0
+};
+function postMessageHandler(e) {
+  const targetOrigin = _internal.targetOrigin;
+  const messageCallback = _internal.callback;
+  if (targetOrigin && messageCallback) {
     if (e.origin === targetOrigin && e.data) {
       checkMessageType(e.data);
-      callback(e.data);
+      messageCallback(e.data);
     }
-  };
-  window.addEventListener("message", messageEventHandler, false);
+  }
+}
+function enablePostMessage(targetOrigin, callback) {
+  console.log("postMessage ENABLED");
+  _internal.targetOrigin = targetOrigin;
+  _internal.callback = callback;
+  window.addEventListener("message", postMessageHandler, false);
 }
 function getResponse(responseToMessageId) {
   if (!responseToMessageId) {
@@ -7127,6 +7143,7 @@ function getScratchpadDeleteResponse(responseToMessageId, status, outcome) {
   return getScratchpadResponse(responseToMessageId, status, null, outcome);
 }
 function sendResponse(appWindow, message, appOrigin) {
+  checkHasListener();
   checkMessageType(message);
   if (appOrigin !== new URL(appOrigin).origin) {
     console.error(`Invalid response origin: '${appOrigin}'`);
@@ -7138,12 +7155,8 @@ function sendResponse(appWindow, message, appOrigin) {
 var defaultAppUrl = "https://barabo.github.io/swm-c10n-demo/app/";
 var defaultAppOrigin = new URL(defaultAppUrl).origin;
 var defaultSessionHandle = "RXhhbXBsZSBoYW5kbGUK";
-var scratchpad = new Map();
 var resourceIds = new Map();
 var sessionHandles = new Map();
-function getScratchpad() {
-  return [...scratchpad.values()];
-}
 function Ehr() {
   const [message, setMessage] = useState("");
   const [response, setResponse] = useState("{}");
@@ -7151,6 +7164,7 @@ function Ehr() {
   const [appUrl, setAppUrl] = useState(defaultAppUrl);
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
+  const [scratchpad, setScratchpad] = useState(new Map());
   const init = useCallback(() => {
     enablePostMessage(appOrigin, (m) => {
       if (sessionHandles.has(m.messagingHandle)) {
@@ -7188,35 +7202,41 @@ function Ehr() {
   function prepopulate(message2) {
     setResponse(JSON.stringify(message2, null, 2));
   }
-  function handshake() {
-    prepopulate(getHandshakeResponse(message.messageId));
+  function getHandshakeResponse2() {
+    return getHandshakeResponse(message.messageId);
   }
-  function uiDone() {
-    prepopulate(getUiDoneResponse(message.messageId, "success", "EHR hid the app iframe"));
+  function getUiDoneResponse2() {
+    return getUiDoneResponse(message.messageId, "success", "EHR hid the app iframe");
   }
-  function uiLaunchActivity() {
-    const activity = message?.payload?.activityType ?? "order-review";
-    prepopulate(getUiLaunchActivityResponse(message.messageId, "success", `EHR completed activity "${activity}"`));
+  function getUiLaunchActivityResponse2() {
+    const activity = message?.payload?.activityType;
+    if (!activity) {
+      console.error("Missing activityType from message", message);
+    }
+    return getUiLaunchActivityResponse(message.messageId, "success", `EHR completed activity "${activity}"`);
   }
-  function scratchpadCreate() {
-    const resourceType = message.payload?.resource?.resourceType ?? "Encounter";
+  function getScratchpadCreateResponse2() {
+    const resourceType = message.payload?.resource?.resourceType;
+    if (!resourceType) {
+      console.error("Unknown resourceType", message);
+    }
     const id2 = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id2);
     const location = `${resourceType}/${id2}`;
     const outcome = void 0;
-    prepopulate(getScratchpadCreateResponse(message.messageId, "200 OK", location, outcome));
+    return getScratchpadCreateResponse(message.messageId, "200 OK", location, outcome);
   }
-  function scratchpadDelete() {
-    const location = message?.payload?.location ?? "Encounter";
+  function getScratchpadDeleteResponse2() {
+    const location = message?.payload?.location ?? "Encounter/123";
     const status = scratchpad.has(location) && "200 OK" || "404 NOT FOUND";
     const outcome = void 0;
-    prepopulate(getScratchpadDeleteResponse(message.messageId, status, outcome));
+    return getScratchpadDeleteResponse(message.messageId, status, outcome);
   }
-  function scratchpadUpdate() {
-    const location = message?.payload?.location ?? "Encounter";
+  function getScratchpadUpdateResponse2() {
+    const location = message?.payload?.location ?? "Encounter/123";
     const status = scratchpad.has(location) && "200 OK" || "404 NOT FOUND";
     const outcome = void 0;
-    prepopulate(getScratchpadUpdateResponse(message.messageId, status, location, outcome));
+    return getScratchpadUpdateResponse(message.messageId, status, location, outcome);
   }
   function copyResponseToClipboard() {
     navigator.clipboard.writeText(messageFromApp);
@@ -7243,6 +7263,31 @@ function Ehr() {
     } catch (e) {
       console.error("failed to send message", e);
     }
+  }
+  function applyScratchpadMessage() {
+    if (!message || !message.messageType?.startsWith("scratchpad.")) {
+      console.error("unable to apply message of unknown type", message);
+    }
+    var reply = {};
+    switch (message.messageType.replace("scratchpad.", "")) {
+      case "create":
+        reply = getScratchpadCreateResponse2();
+        setScratchpad(new Map(scratchpad).set(reply.payload.location, message.payload.resource));
+        break;
+      case "update":
+        reply = getScratchpadUpdateResponse2();
+        setScratchpad(new Map(scratchpad).set(message.payload.location, message.payload.resource));
+        break;
+      case "delete":
+        reply = getScratchpadDeleteResponse2();
+        const copy = new Map(scratchpad);
+        copy.delete(message.payload.location);
+        setScratchpad(copy);
+        break;
+      default:
+        console.error("unknown scratchpad operation", message);
+    }
+    prepopulate(reply);
   }
   return /* @__PURE__ */ react.createElement("div", {
     className: "Ehr"
@@ -7290,17 +7335,17 @@ function Ehr() {
   }))))), /* @__PURE__ */ react.createElement("div", {
     className: "Ehr-buttons"
   }, /* @__PURE__ */ react.createElement("p", null, "Prepopulate response message below for the incoming"), /* @__PURE__ */ react.createElement("button", {
-    onClick: handshake
+    onClick: () => prepopulate(getHandshakeResponse2())
   }, "status.handshake"), /* @__PURE__ */ react.createElement("button", {
-    onClick: uiDone
+    onClick: () => prepopulate(getUiDoneResponse2())
   }, "ui.done"), /* @__PURE__ */ react.createElement("button", {
-    onClick: uiLaunchActivity
+    onClick: () => prepopulate(getUiLaunchActivityResponse2())
   }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadCreate
+    onClick: () => prepopulate(getScratchpadCreateResponse2())
   }, "scratchpad.create"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadUpdate
+    onClick: () => prepopulate(getScratchpadUpdateResponse2())
   }, "scratchpad.update"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadDelete
+    onClick: () => prepopulate(getScratchpadDeleteResponse2())
   }, "scratchpad.delete")), /* @__PURE__ */ react.createElement("div", {
     className: "message-panel"
   }, /* @__PURE__ */ react.createElement("div", {
@@ -7326,9 +7371,17 @@ function Ehr() {
     disabled: !isResponseSendable()
   }, "SEND"))), /* @__PURE__ */ react.createElement("div", {
     className: "Ehr-scratchpad"
-  }, /* @__PURE__ */ react.createElement("p", null, "EHR scratchpad"), /* @__PURE__ */ react.createElement("pre", {
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ react.createElement("p", null, "EHR scratchpad"), /* @__PURE__ */ react.createElement("button", {
+    className: "apply-message",
+    onClick: applyScratchpadMessage,
+    disabled: !message || !message.messageType?.startsWith("scratchpad")
+  }, "Apply Message")), /* @__PURE__ */ react.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ react.createElement("pre", {
     id: "scratchpad"
-  }, JSON.stringify(getScratchpad(), null, 2))), /* @__PURE__ */ react.createElement("div", {
+  }, JSON.stringify(Object.fromEntries(scratchpad), null, 2)))), /* @__PURE__ */ react.createElement("div", {
     className: "Embedded-app"
   }, /* @__PURE__ */ react.createElement("iframe", {
     id: "app-iframe",

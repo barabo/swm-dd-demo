@@ -9,11 +9,6 @@ const defaultAppOrigin = new URL(defaultAppUrl).origin;
 const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
 
 /**
- * Maps scratchpad 'locations' to objects.
- */
-const scratchpad = new Map();
-
-/**
  * Maps ResourceTypes to the last known int ID used for that type.  This helps
  * guarantee that a scratchpad.create message does not collide with an existing
  * Resource in the scratchpad.
@@ -25,13 +20,6 @@ const resourceIds = new Map();
  */
 const sessionHandles = new Map();
 
-/**
- * @returns The contents of the EHR scratchpad.
- */
-function getScratchpad() {
-  return [...scratchpad.values()];
-}
-
 function Ehr() {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
@@ -39,6 +27,7 @@ function Ehr() {
   const [appUrl, setAppUrl] = useState(defaultAppUrl);
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
+  const [scratchpad, setScratchpad] = useState(new Map());
 
   // Enable the postMessage API for App messages to the EHR.
   const init = useCallback(() => {
@@ -91,69 +80,63 @@ function Ehr() {
     setResponse(JSON.stringify(message, null, 2));
   }
 
-  function handshake() {
-    prepopulate(swm.getHandshakeResponse(message.messageId));
+  function getHandshakeResponse() {
+    return swm.getHandshakeResponse(message.messageId);
   }
 
-  function uiDone() {
-    prepopulate(
-      swm.getUiDoneResponse(
-        message.messageId,
-        'success',
-        'EHR hid the app iframe',
-      ),
+  function getUiDoneResponse() {
+    return swm.getUiDoneResponse(
+      message.messageId,
+      'success',
+      'EHR hid the app iframe',
     );
   }
 
-  function uiLaunchActivity() {
-    const activity = message?.payload?.activityType ?? 'order-review';
-    // TODO: don't default to order-review.  Instead, display a failure if no activity type is there.
-    prepopulate(
-      swm.getUiLaunchActivityResponse(
-        message.messageId,
-        'success',
-        `EHR completed activity "${activity}"`,
-      ),
+  function getUiLaunchActivityResponse() {
+    const activity = message?.payload?.activityType;
+    if (!activity) {
+      console.error('Missing activityType from message', message);
+    }
+    return swm.getUiLaunchActivityResponse(
+      message.messageId,
+      'success',
+      `EHR completed activity "${activity}"`,
     );
   }
 
-  function scratchpadCreate() {
-    // TODO: don't default to Encounter - it's an error if there's no resourceType.
-    const resourceType = message.payload?.resource?.resourceType ?? 'Encounter';
+  function getScratchpadCreateResponse() {
+    const resourceType = message.payload?.resource?.resourceType;
+    if (!resourceType) {
+      console.error('Unknown resourceType', message);
+    }
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
     const outcome = undefined; // TODO: populate an OperationOutcome
-    prepopulate(
-      swm.getScratchpadCreateResponse(
-        message.messageId,
-        '200 OK',
-        location,
-        outcome,
-      ),
+    return swm.getScratchpadCreateResponse(
+      message.messageId,
+      '200 OK',
+      location,
+      outcome,
     );
   }
 
-  function scratchpadDelete() {
-    const location = message?.payload?.location ?? 'Encounter';
+  function getScratchpadDeleteResponse() {
+    const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
-    prepopulate(
-      swm.getScratchpadDeleteResponse(message.messageId, status, outcome),
-    );
+    return swm.getScratchpadDeleteResponse(message.messageId, status, outcome);
   }
 
-  function scratchpadUpdate() {
-    const location = message?.payload?.location ?? 'Encounter';
+  function getScratchpadUpdateResponse() {
+    const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
-    prepopulate(
-      swm.getScratchpadUpdateResponse(
-        message.messageId,
-        status,
-        location,
-        outcome,
-      ),
+    return swm.getScratchpadUpdateResponse(
+      message.messageId,
+      status,
+      location,
+      outcome,
     );
   }
 
@@ -186,6 +169,42 @@ function Ehr() {
     } catch (e) {
       console.error('failed to send message', e);
     }
+  }
+
+  function applyScratchpadMessage() {
+    if (!message || !message.messageType?.startsWith('scratchpad.')) {
+      console.error('unable to apply message of unknown type', message);
+    }
+    var reply = {};
+    switch (message.messageType.replace('scratchpad.', '')) {
+      case 'create':
+        reply = getScratchpadCreateResponse();
+        setScratchpad(
+          new Map(scratchpad).set(
+            reply.payload.location,
+            message.payload.resource,
+          ),
+        );
+        break;
+      case 'update':
+        reply = getScratchpadUpdateResponse();
+        setScratchpad(
+          new Map(scratchpad).set(
+            message.payload.location,
+            message.payload.resource,
+          ),
+        );
+        break;
+      case 'delete':
+        reply = getScratchpadDeleteResponse();
+        const copy = new Map(scratchpad);
+        copy.delete(message.payload.location);
+        setScratchpad(copy);
+        break;
+      default:
+        console.error('unknown scratchpad operation', message);
+    }
+    prepopulate(reply);
   }
 
   return (
@@ -244,12 +263,24 @@ function Ehr() {
 
         <div className="Ehr-buttons">
           <p>Prepopulate response message below for the incoming</p>
-          <button onClick={handshake}>status.handshake</button>
-          <button onClick={uiDone}>ui.done</button>
-          <button onClick={uiLaunchActivity}>ui.launchActivity</button>
-          <button onClick={scratchpadCreate}>scratchpad.create</button>
-          <button onClick={scratchpadUpdate}>scratchpad.update</button>
-          <button onClick={scratchpadDelete}>scratchpad.delete</button>
+          <button onClick={() => prepopulate(getHandshakeResponse())}>
+            status.handshake
+          </button>
+          <button onClick={() => prepopulate(getUiDoneResponse())}>
+            ui.done
+          </button>
+          <button onClick={() => prepopulate(getUiLaunchActivityResponse())}>
+            ui.launchActivity
+          </button>
+          <button onClick={() => prepopulate(getScratchpadCreateResponse())}>
+            scratchpad.create
+          </button>
+          <button onClick={() => prepopulate(getScratchpadUpdateResponse())}>
+            scratchpad.update
+          </button>
+          <button onClick={() => prepopulate(getScratchpadDeleteResponse())}>
+            scratchpad.delete
+          </button>
         </div>
         <div className="message-panel">
           <div className="from-app">
@@ -292,8 +323,23 @@ function Ehr() {
           </div>
         </div>
         <div className="Ehr-scratchpad">
-          <p>EHR scratchpad</p>
-          <pre id="scratchpad">{JSON.stringify(getScratchpad(), null, 2)}</pre>
+          <div className="row">
+            <p>EHR scratchpad</p>
+            <button
+              className="apply-message"
+              onClick={applyScratchpadMessage}
+              disabled={
+                !message || !message.messageType?.startsWith('scratchpad')
+              }
+            >
+              Apply Message
+            </button>
+          </div>
+          <div className="row">
+            <pre id="scratchpad">
+              {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
+            </pre>
+          </div>
         </div>
         <div className="Embedded-app">
           <iframe

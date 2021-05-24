@@ -2,6 +2,7 @@
   "scripts": {
     "start": "snowpack dev --port 8000",
     "build": "snowpack build",
+    "postbuild": "./deploy.sh",
     "test": "web-test-runner \"src/**/*.test.jsx\"",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
     "lint": "prettier --check \"src/**/*.{js,jsx}\""
