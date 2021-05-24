@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Publishes a new instance of the app demo.
+# Publishes a new instance of the demo EHR.
 #
 set -e
 set -E
@@ -18,7 +18,7 @@ echo "Copying built page into /docs..."
 cp -av build/ehr ../docs
 
 echo "Inserting the missing URL paths in /docs/ehr/index.html..."
-sed -i .bak -E '/ (href|src)=.\/ehr/s:"/ehr:"/swm-c10n-demo/app:' \
+sed -i .bak -E '/ (href|src)=.\/ehr/s:"/ehr:"/swm-c10n-demo/ehr:' \
   ../docs/ehr/index.html \
   && rm -f ../docs/ehr/index.html.bak
 
