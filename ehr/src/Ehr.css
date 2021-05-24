@@ -103,7 +103,7 @@
   min-height: 30vh;
   width: 95vw;
   flex-direction: row;
-  margin: 1rem;
+  margin: 1vh;
 }
 
 .Site-content .message-panel p {
@@ -162,14 +162,32 @@ textarea {
 
 .Ehr-scratchpad {
   background-color: #282c66;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
   font-size: calc(10px + 2vmin);
   color: lightblue;
   max-height: 25vh;
   overflow: auto;
 }
-
+.Ehr-scratchpad div.row {
+  display: flex;
+  flex-direction: row;
+}
+.Ehr-scratchpad .apply-message {
+  background: #FFF3;
+  color: #c0ff33;
+  margin: 5px;
+}
+.Ehr-scratchpad .apply-message[disabled] {
+  background: #FFF1;
+  color: #FFF3;
+}
+.Ehr-scratchpad p {
+  padding-right: 10px;
+}
 .Ehr-scratchpad pre {
-  margin: 1.0rem;
+  margin: 5px;
   color: #c0ff33;
   background: #FFF3;
   padding: 4px 8px;

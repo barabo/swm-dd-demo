@@ -298,15 +298,23 @@ function Ehr() {
           </div>
         </div>
         <div className="Ehr-scratchpad">
-          <p>EHR scratchpad</p>
-          <button
-            className="apply-message"
-            onClick={applyScratchpadMessage}
-            disabled={!message || !message.messageType?.startsWith('scratchpad')}
-          >
-            Apply Received <code>scratchpad</code> Message
-          </button>
-          <pre id="scratchpad">{JSON.stringify(getScratchpad(), null, 2)}</pre>
+          <div className="row">
+            <p>EHR scratchpad</p>
+            <button
+              className="apply-message"
+              onClick={applyScratchpadMessage}
+              disabled={
+                !message || !message.messageType?.startsWith('scratchpad')
+              }
+            >
+              Apply Message
+            </button>
+          </div>
+          <div className="row">
+            <pre id="scratchpad">
+              {JSON.stringify(getScratchpad(), null, 2)}
+            </pre>
+          </div>
         </div>
         <div className="Embedded-app">
           <iframe
