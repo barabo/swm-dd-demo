@@ -188,6 +188,11 @@ function Ehr() {
     }
   }
 
+  function applyScratchpadMessage() {
+    // TODO: apply the received scratchpad message to the scratchpad
+    // TODO: populate the response buffer with a suitable response
+  }
+
   return (
     <div className="Ehr">
       <header className="Ehr-header">
@@ -293,6 +298,13 @@ function Ehr() {
         </div>
         <div className="Ehr-scratchpad">
           <p>EHR scratchpad</p>
+          <button
+            className="apply-message"
+            onClick={applyScratchpadMessage}
+            disabled={false}
+          >
+            Apply Received <code>scratchpad</code> Message
+          </button>
           <pre id="scratchpad">{JSON.stringify(getScratchpad(), null, 2)}</pre>
         </div>
         <div className="Embedded-app">
