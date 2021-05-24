@@ -7173,7 +7173,7 @@ function sendMessage(client, message) {
 }
 
 // build/app/dist/App.js
-var defaultOrigin = "http://localhost:8000";
+var defaultOrigin = "https://barabo.github.io";
 var defaultHandle = "RXhhbXBsZSBoYW5kbGUK";
 var mockClient = {
   tokenResponse: {
