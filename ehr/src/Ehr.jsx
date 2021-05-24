@@ -191,6 +191,7 @@ function Ehr() {
   function applyScratchpadMessage() {
     // TODO: apply the received scratchpad message to the scratchpad
     // TODO: populate the response buffer with a suitable response
+    console.log('TODO: apply current message', message); // XXX
   }
 
   return (
@@ -301,7 +302,7 @@ function Ehr() {
           <button
             className="apply-message"
             onClick={applyScratchpadMessage}
-            disabled={false}
+            disabled={!message || !message.messageType.startsWith('scratchpad')}
           >
             Apply Received <code>scratchpad</code> Message
           </button>
