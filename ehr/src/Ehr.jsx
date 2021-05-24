@@ -122,14 +122,14 @@ function Ehr() {
   }
 
   function getScratchpadDeleteResponse() {
-    const location = message?.payload?.location ?? 'Encounter';
+    const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
     return swm.getScratchpadDeleteResponse(message.messageId, status, outcome);
   }
 
   function getScratchpadUpdateResponse() {
-    const location = message?.payload?.location ?? 'Encounter';
+    const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
     return swm.getScratchpadUpdateResponse(
