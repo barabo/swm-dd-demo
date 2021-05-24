@@ -302,7 +302,7 @@ function Ehr() {
           <button
             className="apply-message"
             onClick={applyScratchpadMessage}
-            disabled={!message || !message.messageType.startsWith('scratchpad')}
+            disabled={!message || !message.messageType?.startsWith('scratchpad')}
           >
             Apply Received <code>scratchpad</code> Message
           </button>
