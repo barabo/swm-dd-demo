@@ -207,6 +207,22 @@ function Ehr() {
     prepopulate(reply);
   }
 
+  function closeApp() {
+    console.log('TODO: closeApp'); // XXX
+  }
+
+  function showApp() {
+    console.log('TODO: showApp'); // XXX
+  }
+
+  function reloadApp() {
+    console.log('TODO: reloadApp'); // XXX
+  }
+
+  function launchActivity() {
+    console.log('TODO: launchActivity'); // XXX
+  }
+
   return (
     <div className="Ehr">
       <header className="Ehr-header">
@@ -344,10 +360,13 @@ function Ehr() {
         <div className="Embedded-app">
           <div className="ui-buttons">
             <p>EHR UI Controls</p>
-            <button>Close App</button>
-            <button>Show App</button>
-            <button>Reload App</button>
-            <button disabled={message?.messageType !== 'ui.launchActivity'}>
+            <button onClick={closeApp}>Close App</button>
+            <button onClick={showApp}>Show App</button>
+            <button onClick={reloadApp}>Reload App</button>
+            <button
+              onClick={launchActivity}
+              disabled={message?.messageType !== 'ui.launchActivity'}
+            >
               Launch Activity
             </button>
           </div>
