@@ -206,6 +206,7 @@ function App() {
               className="App-message"
               value={message}
               onChange={updateMessage}
+              spellCheck={false}
             />
             <button
               className="send-button"
@@ -227,6 +228,7 @@ function App() {
               className="App-message"
               value={response}
               readOnly={true}
+              spellCheck={false}
             />
             <button className="copy-response" onClick={copyResponseToClipboard}>
               Copy to clipboard

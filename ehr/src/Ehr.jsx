@@ -311,6 +311,7 @@ function Ehr() {
               className="App-message"
               value={messageFromApp}
               readOnly={true}
+              spellCheck={false}
             />
             <button className="copy-response" onClick={copyResponseToClipboard}>
               Copy to clipboard
@@ -328,6 +329,7 @@ function Ehr() {
               className="App-message"
               value={response}
               onChange={updateResponse}
+              spellCheck={false}
             />
             <button
               className="send-button"
