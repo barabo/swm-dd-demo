@@ -7332,7 +7332,8 @@ function App() {
   }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable")), " ", "SMART Web Message to send to EHR:"), /* @__PURE__ */ react.createElement("textarea", {
     className: "App-message",
     value: message,
-    onChange: updateMessage
+    onChange: updateMessage,
+    spellCheck: false
   }), /* @__PURE__ */ react.createElement("button", {
     className: "send-button",
     onClick: sendMessage2,
@@ -7343,7 +7344,8 @@ function App() {
     disabled: true,
     className: "App-message",
     value: response,
-    readOnly: true
+    readOnly: true,
+    spellCheck: false
   }), /* @__PURE__ */ react.createElement("button", {
     className: "copy-response",
     onClick: copyResponseToClipboard
