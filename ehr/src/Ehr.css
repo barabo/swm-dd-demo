@@ -159,7 +159,6 @@ textarea {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  font-size: calc(10px + 2vmin);
   color: lightblue;
   max-height: 25vh;
   overflow: auto;
@@ -185,7 +184,7 @@ textarea {
   color: #c0ff33;
   background: #FFF3;
   padding: 4px 8px;
-  font-size: calc(1.5vh);
+  font-size: calc(0.9rem);
   border-radius: 4px;
   width: 100%;
 }
@@ -204,6 +203,7 @@ textarea {
 .Embedded-app button {
   margin: 0.2vh;
   font-size: calc(4px + 0.5rem);
+  background-color: #c4ffe19e;
 }
 .Embedded-app iframe {
   margin: 3vh;
