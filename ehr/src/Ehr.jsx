@@ -347,7 +347,9 @@ function Ehr() {
             <button>Close App</button>
             <button>Show App</button>
             <button>Reload App</button>
-            <button>Launch Activity</button>
+            <button disabled={message?.messageType !== 'ui.launchActivity'}>
+              Launch Activity
+            </button>
           </div>
           <iframe
             id="app-iframe"
