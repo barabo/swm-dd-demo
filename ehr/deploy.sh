@@ -6,6 +6,8 @@ set -e
 set -E
 set -u
 
+this_script="${0}"
+
 trap 'echo -e "\nFAILED TO DEPLOY\n\\O/\n Y\n/ \\"' ERR
 
 echo "Checking lint..."
@@ -22,12 +24,23 @@ sed -i .bak -E '/ (href|src)=.\/ehr/s:"/ehr:"/swm-c10n-demo/ehr:' \
   ../docs/ehr/index.html \
   && rm -f ../docs/ehr/index.html.bak
 
+function publish() {
+  echo "Publishing $@..."
+  git stash save
+  git checkout main
+  if git status "${@}" | grep -q 'nothing to commit'; then
+    echo "NOTHING NEW"
+    git checkout -
+    git stash pop
+    exit 0
+  fi
+  git add "${@}"
+  git commit -m "auto published by ${this_script}"
+  git push
+  git checkout -
+  git stash pop
+  echo -e '\nDEPLOY COMPLETE!!\n O/\n<Y\n/ >'
+}
+
 echo "Checking for changes to publish..."
-git status ../docs/ehr | grep -q 'nothing to commit' && echo "NOTHING NEW" && exit 0
-
-echo "Publishing built ehr to GHPages..."
-git add ../docs/ehr
-git commit -m "auto deployed by ehr/deploy.sh"
-git push
-
-echo -e '\nDEPLOY COMPLETE!!\n O/\n<Y\n/ >'
+publish ../docs/ehr
