@@ -7165,6 +7165,7 @@ function Ehr() {
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
   const [scratchpad, setScratchpad] = useState(new Map());
+  const [activity, setActivity] = useState({});
   const init = useCallback(() => {
     enablePostMessage(appOrigin, (m) => {
       if (sessionHandles.has(m.messagingHandle)) {
@@ -7209,11 +7210,11 @@ function Ehr() {
     return getUiDoneResponse(message.messageId, "success", "EHR hid the app iframe");
   }
   function getUiLaunchActivityResponse2() {
-    const activity = message?.payload?.activityType;
-    if (!activity) {
+    const activity2 = message?.payload?.activityType;
+    if (!activity2) {
       console.error("Missing activityType from message", message);
     }
-    return getUiLaunchActivityResponse(message.messageId, "success", `EHR completed activity "${activity}"`);
+    return getUiLaunchActivityResponse(message.messageId, "success", `EHR completed activity "${activity2}"`);
   }
   function getScratchpadCreateResponse2() {
     const resourceType = message.payload?.resource?.resourceType;
@@ -7289,6 +7290,32 @@ function Ehr() {
     }
     prepopulate(reply);
   }
+  function hideApp() {
+    const iframe = document.getElementById("app-iframe");
+    iframe.style.display = "none";
+  }
+  function showApp() {
+    const iframe = document.getElementById("app-iframe");
+    iframe.style.display = "";
+  }
+  function closeApp() {
+    const iframe = document.getElementById("app-iframe");
+    iframe.src = "";
+  }
+  function reloadApp() {
+    const iframe = document.getElementById("app-iframe");
+    iframe.src = appUrl;
+  }
+  function launchActivity() {
+    const popup = document.getElementById("activity-panel");
+    setActivity(message.payload);
+    popup.showModal();
+  }
+  function closeActivity() {
+    const popup = document.getElementById("activity-panel");
+    popup.close();
+    prepopulate(getUiLaunchActivityResponse2());
+  }
   return /* @__PURE__ */ react.createElement("div", {
     className: "Ehr"
   }, /* @__PURE__ */ react.createElement("header", {
@@ -7303,6 +7330,11 @@ function Ehr() {
   }, "configure")), /* @__PURE__ */ react.createElement("main", {
     className: "Site-content"
   }, /* @__PURE__ */ react.createElement("dialog", {
+    className: "activity-panel",
+    id: "activity-panel"
+  }, /* @__PURE__ */ react.createElement("pre", null, JSON.stringify(activity, null, 2)), /* @__PURE__ */ react.createElement("button", {
+    onClick: closeActivity
+  }, "Close")), /* @__PURE__ */ react.createElement("dialog", {
     className: "config-panel",
     id: "config-panel"
   }, /* @__PURE__ */ react.createElement("div", {
@@ -7354,7 +7386,8 @@ function Ehr() {
     disabled: true,
     className: "App-message",
     value: messageFromApp,
-    readOnly: true
+    readOnly: true,
+    spellCheck: false
   }), /* @__PURE__ */ react.createElement("button", {
     className: "copy-response",
     onClick: copyResponseToClipboard
@@ -7364,7 +7397,8 @@ function Ehr() {
     id: "responseText",
     className: "App-message",
     value: response,
-    onChange: updateResponse
+    onChange: updateResponse,
+    spellCheck: false
   }), /* @__PURE__ */ react.createElement("button", {
     className: "send-button",
     onClick: sendResponse2,
@@ -7383,7 +7417,20 @@ function Ehr() {
     id: "scratchpad"
   }, JSON.stringify(Object.fromEntries(scratchpad), null, 2)))), /* @__PURE__ */ react.createElement("div", {
     className: "Embedded-app"
-  }, /* @__PURE__ */ react.createElement("iframe", {
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "ui-buttons"
+  }, /* @__PURE__ */ react.createElement("p", null, "EHR UI Controls"), /* @__PURE__ */ react.createElement("button", {
+    onClick: hideApp
+  }, "Hide App"), /* @__PURE__ */ react.createElement("button", {
+    onClick: showApp
+  }, "Show App"), /* @__PURE__ */ react.createElement("button", {
+    onClick: closeApp
+  }, "Close App"), /* @__PURE__ */ react.createElement("button", {
+    onClick: reloadApp
+  }, "Reload App"), /* @__PURE__ */ react.createElement("button", {
+    onClick: launchActivity,
+    disabled: message?.messageType !== "ui.launchActivity"
+  }, "Launch Activity")), /* @__PURE__ */ react.createElement("iframe", {
     id: "app-iframe",
     src: appUrl,
     allow: "clipboard-write",

@@ -157,12 +157,6 @@ textarea {
   height: 60vh;
   flex: 1;
 }
-.Ehr iframe {
-  flex: 1;
-  width: calc(100vw - 5vw);
-  margin: 2.0rem;
-  height: 35vh;
-}
 .Ehr code {
   background: #FFF3;
   padding: 4px 8px;
@@ -178,7 +172,6 @@ textarea {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  font-size: calc(10px + 2vmin);
   color: lightblue;
   max-height: 25vh;
   overflow: auto;
@@ -204,9 +197,30 @@ textarea {
   color: #c0ff33;
   background: #FFF3;
   padding: 4px 8px;
-  font-size: calc(1.5vh);
+  font-size: calc(0.9rem);
   border-radius: 4px;
   width: 100%;
+}
+.Embedded-app {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.Embedded-app .ui-buttons {
+  display: flex;
+  flex-direction: row;
+  margin: 3vh;
+  margin-bottom: 1vh;
+}
+.Embedded-app button {
+  margin: 0.2vh;
+  font-size: calc(4px + 0.5rem);
+  background-color: #c4ffe19e;
+}
+.Embedded-app iframe {
+  margin: 3vh;
+  margin-top: 0;
+  height: 35vh;
 }
 .Ehr-footer {
   background: #01a77e;
