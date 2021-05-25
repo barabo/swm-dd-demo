@@ -342,6 +342,13 @@ function Ehr() {
           </div>
         </div>
         <div className="Embedded-app">
+          <div className="ui-buttons">
+            <p>EHR UI Controls</p>
+            <button>Close App</button>
+            <button>Show App</button>
+            <button>Reload App</button>
+            <button>Launch Activity</button>
+          </div>
           <iframe
             id="app-iframe"
             src={appUrl}
