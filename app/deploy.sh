@@ -6,6 +6,8 @@ set -e
 set -E
 set -u
 
+source ../publish.sh
+
 trap 'echo -e "\nFAILED TO DEPLOY\n\\O/\n Y\n/ \\"' ERR
 
 echo "Checking lint..."
@@ -23,11 +25,4 @@ sed -i .bak -E '/ (href|src)=.\/app/s:"/app:"/swm-c10n-demo/app:' \
   && rm -f ../docs/app/index.html.bak
 
 echo "Checking for changes to publish..."
-git status ../docs/app | grep -q 'nothing to commit' && echo "NOTHING NEW" && exit 0
-
-echo "Publishing built app to GHPages..."
-git add ../docs/app
-git commit -m "auto deployed by app/deploy.sh"
-git push
-
-echo -e '\nDEPLOY COMPLETE!!\n O/\n<Y\n/ >'
+publish main ../docs/app
