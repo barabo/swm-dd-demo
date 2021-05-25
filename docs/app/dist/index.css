@@ -76,7 +76,7 @@ code {
   justify-content: space-between;
   display: flex;
   padding-bottom: 1vmin;
-  font-size: 2vmax;
+  font-size: 2vh;
 }
 .close-config {
   min-width: 3vmax;

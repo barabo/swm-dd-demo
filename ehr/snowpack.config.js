@@ -23,6 +23,6 @@ module.exports = {
     /* ... */
   },
   buildOptions: {
-    'baseUrl': 'swm-c10n-demo',
+    'baseUrl': '/swm-c10n-demo',
   },
 };
