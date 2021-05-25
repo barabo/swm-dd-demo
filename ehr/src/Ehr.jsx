@@ -28,6 +28,7 @@ function Ehr() {
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
   const [scratchpad, setScratchpad] = useState(new Map());
+  const [activity, setActivity] = useState({});
 
   // Enable the postMessage API for App messages to the EHR.
   const init = useCallback(() => {
@@ -207,20 +208,40 @@ function Ehr() {
     prepopulate(reply);
   }
 
-  function closeApp() {
-    console.log('TODO: closeApp'); // XXX
+  function hideApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.style.display = 'none';
+    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
   }
 
   function showApp() {
-    console.log('TODO: showApp'); // XXX
+    const iframe = document.getElementById('app-iframe');
+    iframe.style.display = '';
+    // TODO: enablePostMessage?
+  }
+
+  function closeApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.src = '';
+    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
   }
 
   function reloadApp() {
-    console.log('TODO: reloadApp'); // XXX
+    const iframe = document.getElementById('app-iframe');
+    iframe.src = appUrl;
+    // TODO: side effects?  clear scratchpad?  new messagingHandle?
   }
 
   function launchActivity() {
-    console.log('TODO: launchActivity'); // XXX
+    const popup = document.getElementById('activity-panel');
+    setActivity(message.payload);
+    popup.showModal();
+  }
+
+  function closeActivity() {
+    const popup = document.getElementById('activity-panel');
+    popup.close();
+    prepopulate(getUiLaunchActivityResponse());
   }
 
   return (
@@ -242,6 +263,11 @@ function Ehr() {
         </button>
       </header>
       <main className="Site-content">
+        <dialog className="activity-panel" id="activity-panel">
+          <pre>{JSON.stringify(activity, null, 2)}</pre>
+          <button onClick={closeActivity}>Close</button>
+        </dialog>
+
         <dialog className="config-panel" id="config-panel">
           <div className="config-header">
             <div>EHR Settings</div>
@@ -362,8 +388,9 @@ function Ehr() {
         <div className="Embedded-app">
           <div className="ui-buttons">
             <p>EHR UI Controls</p>
-            <button onClick={closeApp}>Close App</button>
+            <button onClick={hideApp}>Hide App</button>
             <button onClick={showApp}>Show App</button>
+            <button onClick={closeApp}>Close App</button>
             <button onClick={reloadApp}>Reload App</button>
             <button
               onClick={launchActivity}
