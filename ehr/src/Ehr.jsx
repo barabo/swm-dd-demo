@@ -36,9 +36,7 @@ function Ehr() {
       // Only respond to messages with recognized messaging handles.
       if (sessionHandles.has(m.messagingHandle)) {
         setResponse(
-          `Awaiting EHR action in response to the received '${
-            m.messageType || undefined
-          }' message...`,
+          `Awaiting EHR action in response to the received '${m?.messageType}' message...`,
         );
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
