@@ -11,16 +11,13 @@ function publish() {
   git stash pop
   if git status "${@}" | grep -q 'nothing to commit'; then
     echo "NOTHING NEW"
-    git stash save
-    git checkout -
-    git stash pop
-    exit 0
+  else
+    git add "${@}"
+    git commit -m "auto published by ${0}"
+    git push
+    echo -e '\nDEPLOY COMPLETE!!\n O/\n<Y\n/ >'
   fi
-  git add "${@}"
-  git commit -m "auto published by ${0}"
-  git push
   git stash save
   git checkout -
   git stash pop
-  echo -e '\nDEPLOY COMPLETE!!\n O/\n<Y\n/ >'
 }
