@@ -216,7 +216,7 @@ function App() {
               spellCheck={false}
             />
             <span className="send-controls">
-              <label>
+              <label disabled={window.parent === window.self}>
                 <input
                   type="checkbox"
                   id="auto-send"
