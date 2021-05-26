@@ -7169,7 +7169,7 @@ function Ehr() {
   const init = useCallback(() => {
     enablePostMessage(appOrigin, (m) => {
       if (sessionHandles.has(m.messagingHandle)) {
-        setResponse("");
+        setResponse(`Awaiting EHR action in response to the received '${m.messageType || void 0}' message...`);
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
       } else if (m.messagingHandle) {
@@ -7178,6 +7178,11 @@ function Ehr() {
     });
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
+  useEffect(() => {
+    if (document.getElementById("auto-send").checked && isResponseSendable()) {
+      sendResponse2();
+    }
+  }, [response]);
   function openConfig() {
     document.getElementById("config-panel").showModal();
   }
@@ -7243,14 +7248,14 @@ function Ehr() {
     navigator.clipboard.writeText(messageFromApp);
   }
   function isResponseSendable() {
-    if (!message || !response) {
-      return false;
-    }
-    const r = JSON.parse(response);
-    if (!r.responseToMessageId) {
-      return false;
-    }
-    return true;
+    if (message && response)
+      try {
+        if (JSON.parse(response).responseToMessageId) {
+          return true;
+        }
+      } catch (error) {
+      }
+    return false;
   }
   function sendResponse2() {
     try {
@@ -7399,11 +7404,18 @@ function Ehr() {
     value: response,
     onChange: updateResponse,
     spellCheck: false
-  }), /* @__PURE__ */ react.createElement("button", {
+  }), /* @__PURE__ */ react.createElement("span", {
+    className: "send-controls"
+  }, /* @__PURE__ */ react.createElement("label", {
+    title: "Automatically SEND the response above when updated."
+  }, /* @__PURE__ */ react.createElement("input", {
+    type: "checkbox",
+    id: "auto-send"
+  }), "Auto-SEND"), /* @__PURE__ */ react.createElement("button", {
     className: "send-button",
     onClick: sendResponse2,
     disabled: !isResponseSendable()
-  }, "SEND"))), /* @__PURE__ */ react.createElement("div", {
+  }, "SEND")))), /* @__PURE__ */ react.createElement("div", {
     className: "Ehr-scratchpad"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "row"
