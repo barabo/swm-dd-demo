@@ -127,8 +127,17 @@ textarea {
   background-color:slategray;
 }
 
-.send-button {
+.send-controls {
+  display: flex;
+  flex-direction: row;
+  margin: 5px;
+  white-space: nowrap;
+  max-height: 1.5rem;
+}
+.send-controls button {
   background-color: rgba(8, 200, 8, 0.329);
+  width: 100%;
+  margin-left: 5px;
 }
 
 .from-app {

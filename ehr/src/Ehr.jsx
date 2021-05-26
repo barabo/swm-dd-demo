@@ -35,7 +35,9 @@ function Ehr() {
     swm.enablePostMessage(appOrigin, (m) => {
       // Only respond to messages with recognized messaging handles.
       if (sessionHandles.has(m.messagingHandle)) {
-        setResponse('');
+        setResponse(
+          `Awaiting EHR action in response to the received '${m?.messageType}' message...`,
+        );
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
         // TODO: disable all the buttons upon receipt of a valid message??
@@ -46,6 +48,13 @@ function Ehr() {
     });
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
+
+  // Auto-send should trigger when the response is updated
+  useEffect(() => {
+    if (document.getElementById('auto-send').checked && isResponseSendable()) {
+      sendResponse();
+    }
+  }, [response]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
@@ -148,14 +157,13 @@ function Ehr() {
   }
 
   function isResponseSendable() {
-    if (!message || !response) {
-      return false;
-    }
-    const r = JSON.parse(response);
-    if (!r.responseToMessageId) {
-      return false;
-    }
-    return true;
+    if (message && response)
+      try {
+        if (JSON.parse(response).responseToMessageId) {
+          return true;
+        }
+      } catch (error) {}
+    return false;
   }
 
   function sendResponse() {
@@ -357,13 +365,19 @@ function Ehr() {
               onChange={updateResponse}
               spellCheck={false}
             />
-            <button
-              className="send-button"
-              onClick={sendResponse}
-              disabled={!isResponseSendable()}
-            >
-              SEND
-            </button>
+            <span className="send-controls">
+              <label title="Automatically SEND the response above when updated.">
+                <input type="checkbox" id="auto-send" />
+                Auto-SEND
+              </label>
+              <button
+                className="send-button"
+                onClick={sendResponse}
+                disabled={!isResponseSendable()}
+              >
+                SEND
+              </button>
+            </span>
           </div>
         </div>
         <div className="Ehr-scratchpad">

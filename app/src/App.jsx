@@ -39,6 +39,13 @@ function App() {
   }, [targetOrigin]);
   useEffect(init, [init]);
 
+  // Auto-send should trigger when the response is updated
+  useEffect(() => {
+    if (document.getElementById('auto-send').checked) {
+      sendMessage();
+    }
+  }, [message]);
+
   function openConfig() {
     document.getElementById('config-panel').showModal();
   }
@@ -208,13 +215,23 @@ function App() {
               onChange={updateMessage}
               spellCheck={false}
             />
-            <button
-              className="send-button"
-              onClick={sendMessage}
-              disabled={window.parent === window.self}
-            >
-              SEND
-            </button>
+            <span className="send-controls">
+              <label disabled={window.parent === window.self}>
+                <input
+                  type="checkbox"
+                  id="auto-send"
+                  disabled={window.parent === window.self}
+                />
+                Auto-SEND
+              </label>
+              <button
+                className="send-button"
+                onClick={sendMessage}
+                disabled={window.parent === window.self}
+              >
+                SEND
+              </button>
+            </span>
           </div>
           <div className="from-ehr">
             <p>
