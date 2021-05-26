@@ -35,7 +35,11 @@ function Ehr() {
     swm.enablePostMessage(appOrigin, (m) => {
       // Only respond to messages with recognized messaging handles.
       if (sessionHandles.has(m.messagingHandle)) {
-        setResponse('');
+        setResponse(
+          `Awaiting EHR action in response to the received '${
+            m.messageType || undefined
+          }' message...`,
+        );
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
         // TODO: disable all the buttons upon receipt of a valid message??
@@ -155,14 +159,13 @@ function Ehr() {
   }
 
   function isResponseSendable() {
-    if (!message || !response) {
-      return false;
-    }
-    const r = JSON.parse(response);
-    if (!r.responseToMessageId) {
-      return false;
-    }
-    return true;
+    if (message && response)
+      try {
+        if (JSON.parse(response).responseToMessageId) {
+          return true;
+        }
+      } catch (error) {}
+    return false;
   }
 
   function sendResponse() {
@@ -365,7 +368,7 @@ function Ehr() {
               spellCheck={false}
             />
             <span className="send-controls">
-              <label>
+              <label title="Automatically SEND the response above when updated.">
                 <input type="checkbox" id="auto-send" />
                 Auto-SEND
               </label>
