@@ -47,6 +47,13 @@ function Ehr() {
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
 
+  // Auto-send should trigger when the response is updated
+  useEffect(() => {
+    if (document.getElementById('auto-send').checked && isResponseSendable()) {
+      sendResponse();
+    }
+  }, [response]);
+
   function openConfig() {
     document.getElementById('config-panel').showModal();
   }
@@ -359,11 +366,7 @@ function Ehr() {
             />
             <span className="send-controls">
               <label>
-                <input
-                  type="checkbox"
-                  id="auto-send"
-                  disabled={!isResponseSendable()}
-                />
+                <input type="checkbox" id="auto-send" />
                 Auto-SEND
               </label>
               <button

@@ -39,6 +39,13 @@ function App() {
   }, [targetOrigin]);
   useEffect(init, [init]);
 
+  // Auto-send should trigger when the response is updated
+  useEffect(() => {
+    if (document.getElementById('auto-send').checked) {
+      sendMessage();
+    }
+  }, [message]);
+
   function openConfig() {
     document.getElementById('config-panel').showModal();
   }
