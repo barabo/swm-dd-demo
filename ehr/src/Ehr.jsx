@@ -357,13 +357,23 @@ function Ehr() {
               onChange={updateResponse}
               spellCheck={false}
             />
-            <button
-              className="send-button"
-              onClick={sendResponse}
-              disabled={!isResponseSendable()}
-            >
-              SEND
-            </button>
+            <span className="send-controls">
+              <label>
+                <input
+                  type="checkbox"
+                  id="auto-send"
+                  disabled={!isResponseSendable()}
+                />
+                Auto-SEND
+              </label>
+              <button
+                className="send-button"
+                onClick={sendResponse}
+                disabled={!isResponseSendable()}
+              >
+                SEND
+              </button>
+            </span>
           </div>
         </div>
         <div className="Ehr-scratchpad">
