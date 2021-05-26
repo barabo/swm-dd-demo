@@ -7197,6 +7197,11 @@ function App() {
     });
   }, [targetOrigin]);
   useEffect(init, [init]);
+  useEffect(() => {
+    if (document.getElementById("auto-send").checked) {
+      sendMessage2();
+    }
+  }, [message]);
   function openConfig() {
     document.getElementById("config-panel").showModal();
   }
@@ -7334,11 +7339,19 @@ function App() {
     value: message,
     onChange: updateMessage,
     spellCheck: false
-  }), /* @__PURE__ */ react.createElement("button", {
+  }), /* @__PURE__ */ react.createElement("span", {
+    className: "send-controls"
+  }, /* @__PURE__ */ react.createElement("label", {
+    disabled: window.parent === window.self
+  }, /* @__PURE__ */ react.createElement("input", {
+    type: "checkbox",
+    id: "auto-send",
+    disabled: window.parent === window.self
+  }), "Auto-SEND"), /* @__PURE__ */ react.createElement("button", {
     className: "send-button",
     onClick: sendMessage2,
     disabled: window.parent === window.self
-  }, "SEND")), /* @__PURE__ */ react.createElement("div", {
+  }, "SEND"))), /* @__PURE__ */ react.createElement("div", {
     className: "from-ehr"
   }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Read-only")), " ", "SMART Web Message EHR response:"), /* @__PURE__ */ react.createElement("textarea", {
     disabled: true,
