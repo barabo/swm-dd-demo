@@ -28,6 +28,7 @@ function Ehr() {
   const [appOrigin, setAppOrigin] = useState(defaultAppOrigin);
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
   const [scratchpad, setScratchpad] = useState(new Map());
+  const [activity, setActivity] = useState({});
 
   // Enable the postMessage API for App messages to the EHR.
   const init = useCallback(() => {
@@ -207,6 +208,42 @@ function Ehr() {
     prepopulate(reply);
   }
 
+  function hideApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.style.display = 'none';
+    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
+  }
+
+  function showApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.style.display = '';
+    // TODO: enablePostMessage?
+  }
+
+  function closeApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.src = '';
+    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
+  }
+
+  function reloadApp() {
+    const iframe = document.getElementById('app-iframe');
+    iframe.src = appUrl;
+    // TODO: side effects?  clear scratchpad?  new messagingHandle?
+  }
+
+  function launchActivity() {
+    const popup = document.getElementById('activity-panel');
+    setActivity(message.payload);
+    popup.showModal();
+  }
+
+  function closeActivity() {
+    const popup = document.getElementById('activity-panel');
+    popup.close();
+    prepopulate(getUiLaunchActivityResponse());
+  }
+
   return (
     <div className="Ehr">
       <header className="Ehr-header">
@@ -226,6 +263,11 @@ function Ehr() {
         </button>
       </header>
       <main className="Site-content">
+        <dialog className="activity-panel" id="activity-panel">
+          <pre>{JSON.stringify(activity, null, 2)}</pre>
+          <button onClick={closeActivity}>Close</button>
+        </dialog>
+
         <dialog className="config-panel" id="config-panel">
           <div className="config-header">
             <div>EHR Settings</div>
@@ -295,6 +337,7 @@ function Ehr() {
               className="App-message"
               value={messageFromApp}
               readOnly={true}
+              spellCheck={false}
             />
             <button className="copy-response" onClick={copyResponseToClipboard}>
               Copy to clipboard
@@ -312,6 +355,7 @@ function Ehr() {
               className="App-message"
               value={response}
               onChange={updateResponse}
+              spellCheck={false}
             />
             <button
               className="send-button"
@@ -342,6 +386,19 @@ function Ehr() {
           </div>
         </div>
         <div className="Embedded-app">
+          <div className="ui-buttons">
+            <p>EHR UI Controls</p>
+            <button onClick={hideApp}>Hide App</button>
+            <button onClick={showApp}>Show App</button>
+            <button onClick={closeApp}>Close App</button>
+            <button onClick={reloadApp}>Reload App</button>
+            <button
+              onClick={launchActivity}
+              disabled={message?.messageType !== 'ui.launchActivity'}
+            >
+              Launch Activity
+            </button>
+          </div>
           <iframe
             id="app-iframe"
             src={appUrl}
