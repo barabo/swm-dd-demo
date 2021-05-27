@@ -1,6 +1,6 @@
 {
   "name": "swm-client-lib",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "",
   "main": "index.html",
   "exports": {
@@ -14,6 +14,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "snowpack dev --port 3333",
     "build": "snowpack build",
+    "prepublish": "./prepublish.sh",
     "publish": "npm publish",
     "format": "prettier --write swm.js",
     "lint": "prettier --check swm.js"
