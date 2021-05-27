@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -e
-set -x
 set -u
 
 LATEST="$( npm show swm-client-lib version )"
