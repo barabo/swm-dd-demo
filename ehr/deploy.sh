@@ -20,7 +20,7 @@ echo "Copying built page into /docs..."
 cp -av build/ehr ../docs
 
 echo "Inserting the missing URL paths in /docs/ehr/index.html..."
-sed -i .bak -E '/ (href|src)=.\/ehr/s:"/ehr:"/swm-c10n-demo/ehr:' \
+sed -i .bak -E '/ (href|src)=.\/ehr/s:"/ehr:"/swm-dd-demo/ehr:' \
   ../docs/ehr/index.html \
   && rm -f ../docs/ehr/index.html.bak
 

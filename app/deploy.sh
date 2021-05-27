@@ -20,7 +20,7 @@ echo "Copying built page into /docs..."
 cp -av build/app ../docs
 
 echo "Inserting the missing URL paths in /docs/app/index.html..."
-sed -i .bak -E '/ (href|src)=.\/app/s:"/app:"/swm-c10n-demo/app:' \
+sed -i .bak -E '/ (href|src)=.\/app/s:"/app:"/swm-dd-demo/app:' \
   ../docs/app/index.html \
   && rm -f ../docs/app/index.html.bak
 
