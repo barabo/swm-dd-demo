@@ -1,8 +1,8 @@
 {
   "name": "swm-client-lib",
-  "version": "1.0.0",
+  "version": "0.1.3",
   "description": "",
-  "main": "demo.html",
+  "main": "index.html",
   "exports": {
     ".": {
       "browser": {
@@ -13,7 +13,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "snowpack dev --port 3333",
-    "build": "snowpack build"
+    "build": "snowpack build",
+    "publish": "npm publish",
+    "format": "prettier --write swm.js",
+    "lint": "prettier --check swm.js"
   },
   "author": "Carl Anderson (carl.anderson@microsoft.com)",
   "license": "MIT",
@@ -21,6 +24,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "prettier": "^2.2.1",
     "snowpack": "^3.3.7"
   }
 }
