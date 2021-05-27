@@ -1,5 +1,7 @@
 # SMART Web Messaging Demo App
 
+A simple, EHR-embeddable app that can be used to test an EHR's implementation of SMART Web Messaging capabilities.
+
 ## User Instructions
 
 ### Profile Audience
