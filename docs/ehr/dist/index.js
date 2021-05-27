@@ -7152,7 +7152,7 @@ function sendResponse(appWindow, message, appOrigin) {
 }
 
 // build/ehr/dist/Ehr.js
-var defaultAppUrl = "https://barabo.github.io/swm-c10n-demo/app/";
+var defaultAppUrl = "https://barabo.github.io/swm-dd-demo/app/";
 var defaultAppOrigin = new URL(defaultAppUrl).origin;
 var defaultSessionHandle = "RXhhbXBsZSBoYW5kbGUK";
 var resourceIds = new Map();
@@ -7169,7 +7169,7 @@ function Ehr() {
   const init = useCallback(() => {
     enablePostMessage(appOrigin, (m) => {
       if (sessionHandles.has(m.messagingHandle)) {
-        setResponse(`Awaiting EHR action in response to the received '${m.messageType || void 0}' message...`);
+        setResponse(`Awaiting EHR action in response to the received '${m?.messageType}' message...`);
         setMessage(m);
         setMessageFromApp(JSON.stringify(m, null, 2));
       } else if (m.messagingHandle) {
