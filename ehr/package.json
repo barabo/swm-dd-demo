@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "snowpack dev --port 8000",
+    "start": "snowpack dev --port 8000 --reload",
     "build": "snowpack build",
     "postbuild": "./deploy.sh",
     "test": "web-test-runner \"src/**/*.test.jsx\"",

@@ -33,7 +33,7 @@ function App() {
 
   // Enable the postMessage API for EHR responses to the App.
   const init = useCallback(() => {
-    swm.enablePostMessage(targetOrigin, (r) => {
+    return swm.enablePostMessage(targetOrigin, (r) => {
       setResponse(JSON.stringify(r, null, 2));
     });
   }, [targetOrigin]);
@@ -126,7 +126,7 @@ function App() {
   function sendMessage() {
     try {
       const m = JSON.parse(message);
-      swm.checkMessageType(m);
+      swm.checkIsObject(m);
       setResponse('Failed to send message to EHR!');
       swm.sendMessage(mockClient, m);
       setResponse('Awaiting EHR response...');

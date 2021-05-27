@@ -3,7 +3,7 @@ import './Ehr.css';
 import * as swm from './swm'; // XXX local dev only TEMPORARY
 //import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
 
-//const defaultAppUrl = 'https://barabo.github.io/swm-c10n-demo/app/';
+//const defaultAppUrl = 'https://barabo.github.io/swm-dd-demo/app/';
 const defaultAppUrl = 'http://localhost:8001/app/';
 const defaultAppOrigin = new URL(defaultAppUrl).origin;
 const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
@@ -32,7 +32,7 @@ function Ehr() {
 
   // Enable the postMessage API for App messages to the EHR.
   const init = useCallback(() => {
-    swm.enablePostMessage(appOrigin, (m) => {
+    return swm.enablePostMessage(appOrigin, (m) => {
       // Only respond to messages with recognized messaging handles.
       if (sessionHandles.has(m.messagingHandle)) {
         setResponse(
@@ -169,7 +169,7 @@ function Ehr() {
   function sendResponse() {
     try {
       const r = JSON.parse(response);
-      swm.checkMessageType(r);
+      swm.checkIsObject(r);
       const window = sessionHandles.get(message.messagingHandle);
       if (!window) {
         console.error('Unknown session handle', sessionHandle);
@@ -250,6 +250,14 @@ function Ehr() {
     const popup = document.getElementById('activity-panel');
     popup.close();
     prepopulate(getUiLaunchActivityResponse());
+  }
+
+  function saveSessionHandle() {
+    // TODO: change this to useState
+    sessionHandles.set(
+      sessionHandle,
+      document.getElementById('app-iframe').contentWindow,
+    );
   }
 
   return (
@@ -417,12 +425,7 @@ function Ehr() {
             id="app-iframe"
             src={appUrl}
             allow="clipboard-write"
-            onLoad={() => {
-              sessionHandles.set(
-                sessionHandle,
-                document.getElementById('app-iframe').contentWindow,
-              );
-            }}
+            onLoad={saveSessionHandle}
           ></iframe>
         </div>
       </main>
