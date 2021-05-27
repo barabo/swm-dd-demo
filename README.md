@@ -1,11 +1,21 @@
-# swm-c10n-demo
-Demo code for the May 2021, HL7 Connectathon - SMART Web Messaging Track
+# swm-dd-demo
 
-# https://github.com/barabo/swm-c10n-demo/projects/1
-This is the live connectathon project board for changes to be made in this helper utility.
+Demo code for the [June 2021, HL7 FHIR DevDays](https://www.devdays.com/june-2021/) - SMART Web Messaging Events
 
-# https://tinyurl.com/swm-c10n
-This links to the Track Kickoff Presentation
+## Important Links
 
-# https://tinyurl.com/swm-c10n-code
-This link should be the definitive path to the connectathon codebase (in case it moves mid-connectathon)
+* [https://barabo.github.io/swm-dd-demo/](https://barabo.github.io/swm-dd-demo/)
+
+  This is where you will find the user guides and the static pages you can use for testing.
+
+* [https://github.com/barabo/swm-dd-demo/projects/1](https://github.com/barabo/swm-dd-demo/projects/1)
+
+  This is the project board for changes to be made (read: bugs to be reported) in this helper utility.
+
+* [https://tinyurl.com/swm-dd](https://tinyurl.com/swm-dd)
+
+  The event slideshow.
+
+* [https://tinyurl.com/swm-dd-code](https://tinyurl.com/swm-dd-code)
+
+  This link should be the definitive path to the codebase (in case it moves mid-event).

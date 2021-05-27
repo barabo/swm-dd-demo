@@ -29,11 +29,13 @@ import * as swm from 'swm-client-lib';
 ```
 
 ### Configuration and Setup
+
 To use the provided demo EHR, you must configure the EHR to use your app's web origin.  By default, the app uses `http://localhost:8001` as the app origin, but this configuration can be changed to your remote address.
 
 After your app completes its SMART Launch, it should retain a handle on the SMART launch client, and provide it to the companion library when creating messages to send to the EHR.  The library expects the client to contain `smart_web_messaging_handle` and `smart_web_messaging_origin` parameters in the `tokenResponse` section of the client.
 
 Here's an example from the demo React App that may be informative:
+
 ```js
 import React, { useState } from 'react';
 import './App.css';
@@ -77,4 +79,5 @@ function App() {
 ```
 
 ## User Interface
+
 ![image](https://user-images.githubusercontent.com/4342684/118538020-45e79a80-b713-11eb-878d-33f476ed02f3.png)
