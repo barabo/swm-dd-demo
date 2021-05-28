@@ -1,6 +1,6 @@
 {
   "name": "swm-client-lib",
-  "version": "0.1.14",
+  "version": "0.1.16",
   "description": "",
   "main": "index.html",
   "exports": {
