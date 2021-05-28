@@ -4,6 +4,9 @@ set -e
 set -u
 
 if [[ $( basename $PWD ) == 'lib' ]]; then
+  echo "Ensuring a clean build..."
+  npm run lint
+
   echo "Ensuring a fresh build..."
   npm run build
 fi
