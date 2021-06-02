@@ -8,7 +8,8 @@ who wish to enable SMART Web Messaging functionality in their software.
 ### Publish a new version
 
 To publish a new version of the library into npm, you must first configure
-your local npm to allow publishing new versions to https://www.npmjs.com/package/swm-client-lib
+your local npm to allow publishing new versions to
+[https://www.npmjs.com/package/swm-client-lib](https://www.npmjs.com/package/swm-client-lib)
 
 When ready to release a new version, please update the version number in
 packages.json and check the bumped version in to git.
