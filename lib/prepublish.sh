@@ -27,3 +27,8 @@ if [[ $HIGHEST == $LATEST ]]; then
 fi
 
 echo "OK to publish new version: $NEXT"
+if [[ $( basename $PWD ) == 'lib' ]]; then
+  echo "Running 'npm publish' from the build directory!"
+  cd build
+  exec npm publish
+fi
