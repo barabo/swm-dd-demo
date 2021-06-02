@@ -1,22 +1,17 @@
 .App {
+  background-color: #e2e2e2c5;
   text-align: center;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-.App code {
-  background: #FFF3;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
 .App p {
   margin: 0.4rem;
-  color: #cafe;
+  color: #a72222ee;
   font-size: calc(10px + 2vmin);
   text-align: left;
 }
 .App pre {
-  color: #c0ff33;
   background: #FFF3;
   padding: 4px 8px;
   border-radius: 4px;
@@ -24,11 +19,11 @@
 }
 
 .App-header {
-  background-color: #caf3;
+  background-color: #ffaaaa33;
   display: flex;
   flex-direction: row;
   font-size: calc(10px + 2vmin);
-  color: #cafe;
+  color: #ffaaaaee;
 }
 
 .config-button {
@@ -76,6 +71,7 @@
 }
 
 .App main {
+  background-color: #ffffff99;
   flex: 1;
   height: 100vh;
 }
@@ -105,7 +101,7 @@
 
 .message-panel p {
   font-size: calc(10px + 1vmin);
-  color: #61dafb;
+  color: #a72222ee;
 }
 
 .message-panel div {
@@ -116,12 +112,9 @@
 .to-send {
   display: flex;
   flex-direction: column;
-  background-color: lightslategrey;
+  background-color: lightpink;
 }
 
-.send-button {
-  background-color: rgba(8, 200, 8, 0.329);
-}
 .send-controls {
   display: flex;
   flex-direction: row;
@@ -130,9 +123,13 @@
   max-height: 1.5rem;
 }
 .send-controls button {
-  background-color: rgba(8, 200, 8, 0.329);
+  color: red;
+  font-weight: bold;
   width: 100%;
   margin-left: 5px;
+}
+.send-controls button[disabled] {
+  color: gray;
 }
 .send-controls label[disabled] {
   color: darkgray;
@@ -151,14 +148,10 @@
 }
 
 .App-footer {
-  background-color: #caf3;
+  background-color: #ffaaaa33;
   display: flex;
   flex-direction: column;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: #cafe;
-}
-
-.App-footer a {
-  color: #61dafb;
+  color: #ff4242ee;
 }
