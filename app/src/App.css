@@ -1,5 +1,5 @@
 .App {
-  background-color: #e2e2e2c5;
+  background-color: lightyellow;
   text-align: center;
   min-height: 100vh;
   display: flex;
@@ -7,23 +7,22 @@
 }
 .App p {
   margin: 0.4rem;
-  color: #a72222ee;
+  color: darkred;
   font-size: calc(10px + 2vmin);
   text-align: left;
 }
 .App pre {
-  background: #FFF3;
   padding: 4px 8px;
   border-radius: 4px;
   text-align: left;
 }
 
 .App-header {
-  background-color: #ffaaaa33;
+  background-color: lightgray;
   display: flex;
   flex-direction: row;
   font-size: calc(10px + 2vmin);
-  color: #ffaaaaee;
+  color: lightpink;
 }
 
 .config-button {
@@ -77,7 +76,6 @@
 }
 
 .App-buttons {
-  background: lightgray;
   display: flex;
   flex-direction: row;
   justify-content: left;
@@ -101,7 +99,7 @@
 
 .message-panel p {
   font-size: calc(10px + 1vmin);
-  color: #a72222ee;
+  color: darkred;
 }
 
 .message-panel div {
@@ -148,10 +146,12 @@
 }
 
 .App-footer {
-  background-color: #ffaaaa33;
+  background-color: lightgray;
   display: flex;
   flex-direction: column;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: #ff4242ee;
+}
+.App-footer a {
+  color: red;
 }
