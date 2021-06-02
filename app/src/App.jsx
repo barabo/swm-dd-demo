@@ -143,7 +143,7 @@ function App() {
   }
 
   // Display a different title if not embedded or launched.
-  var appTitle = 'This demo SMART app is embedded in an EHR.';
+  var appTitle = 'EMBEDDED APP';
   if (window.parent === window.self) {
     appTitle = 'No EHR detected for this demo SMART app; SEND is disabled!';
   }
@@ -257,9 +257,9 @@ function App() {
         <a
           target="_blank"
           rel="noreferrer noopener"
-          href="https://tinyurl.com/swm-c10n-code"
+          href="https://tinyurl.com/swm-dd-code"
         >
-          https://tinyurl.com/swm-c10n-code
+          https://tinyurl.com/swm-dd-code
         </a>
       </footer>
     </div>
