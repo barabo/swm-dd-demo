@@ -330,8 +330,8 @@ function Ehr() {
           <div className="from-app">
             <p>
               <b>
-                <i>Read-only</i>
-              </b>{' '}
+                <i>Read-only </i>
+              </b>
               message <i>received</i> from App:
             </p>
             <textarea
@@ -346,31 +346,33 @@ function Ehr() {
             </button>
           </div>
           <div className="to-send">
-            <select
-              disabled={!messageFromApp}
-              id="template"
-              onChange={(e) => {
-                const selected = e.target.selectedOptions[0].label;
-                prepopulate(responseGetters[selected]());
-                // Resetting the selected index allows for the same option to
-                // be selected repeatedly.
-                e.target.selectedIndex = 0;
-              }}
-            >
-              <option value="">Insert a response template...</option>
-              <option value="status.handshake">status.handshake</option>
-              <option value="ui.done">ui.done</option>
-              <option value="ui.launchActivity">ui.launchActivity</option>
-              <option value="scratchpad.create">scratchpad.create</option>
-              <option value="scratchpad.update">scratchpad.update</option>
-              <option value="scratchpad.delete">scratchpad.delete</option>
-            </select>
-            <p>
-              <b>
-                <i>Editable</i>
-              </b>{' '}
-              <i>response</i> to send to App:
-            </p>
+            <div className="send-header">
+              <p>
+                <b>
+                  <i>Editable </i>
+                </b>
+                <i>response</i> to send to App:
+              </p>
+              <select
+                disabled={!messageFromApp}
+                id="template"
+                onChange={(e) => {
+                  const selected = e.target.selectedOptions[0].label;
+                  prepopulate(responseGetters[selected]());
+                  // Resetting the selected index allows for the same option to
+                  // be selected repeatedly.
+                  e.target.selectedIndex = 0;
+                }}
+              >
+                <option value="">Insert a response...</option>
+                <option value="status.handshake">status.handshake</option>
+                <option value="ui.done">ui.done</option>
+                <option value="ui.launchActivity">ui.launchActivity</option>
+                <option value="scratchpad.create">scratchpad.create</option>
+                <option value="scratchpad.update">scratchpad.update</option>
+                <option value="scratchpad.delete">scratchpad.delete</option>
+              </select>
+            </div>
             <textarea
               id="responseText"
               className="App-message"
