@@ -294,7 +294,7 @@ function Ehr() {
           &nbsp; Demo App
         </p>
         <button className="config-button" onClick={openConfig}>
-          <img src="/ehr/dist/settings.png" alt="configure"></img>
+          configure
         </button>
       </header>
       <main className="Site-content">
