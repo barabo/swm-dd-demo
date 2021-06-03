@@ -7292,7 +7292,10 @@ function App() {
   }, /* @__PURE__ */ react.createElement("p", null, appTitle), /* @__PURE__ */ react.createElement("button", {
     className: "config-button",
     onClick: openConfig
-  }, "configure")), /* @__PURE__ */ react.createElement("main", {
+  }, /* @__PURE__ */ react.createElement("img", {
+    src: "/app/dist/settings.png",
+    alt: "configure"
+  }))), /* @__PURE__ */ react.createElement("main", {
     className: "App-main"
   }, /* @__PURE__ */ react.createElement("dialog", {
     className: "config-panel",
