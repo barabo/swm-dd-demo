@@ -7197,6 +7197,11 @@ function App() {
       sendMessage2();
     }
   }, [message]);
+  useEffect(() => {
+    if (message !== "{}" && !document.getElementById("auto-send").checked) {
+      setResponse("Click SEND to send message to EHR...");
+    }
+  }, [message]);
   function openConfig() {
     document.getElementById("config-panel").showModal();
   }
