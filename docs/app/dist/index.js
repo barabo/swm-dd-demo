@@ -7014,7 +7014,7 @@ var reactDom = createCommonjsModule(function(module) {
 });
 var react_dom_default = reactDom;
 
-// build/_snowpack/pkg/uuid.js
+// build/app/dist/meta/pkg/uuid.js
 var getRandomValues;
 var rnds8 = new Uint8Array(16);
 function rng() {
@@ -7058,19 +7058,20 @@ function v4(options, buf, offset) {
 }
 
 // build/app/dist/swm.js
-function checkHasListener() {
-  if (!_internal.callback || !_internal.targetOrigin) {
+var handlers = new Map();
+function checkIsListening(window2) {
+  if (![...handlers.values()].includes(window2)) {
     console.error("No listener configured - unable to receive from target!");
   }
 }
-var expectedMessageType = Object.prototype.toString.call({});
-function checkMessageType(message) {
+function checkIsObject(message) {
+  const objectTypeRepr = Object.prototype.toString.call({});
   const type = Object.prototype.toString.call(message);
-  if (type !== expectedMessageType) {
-    console.error(`expected a message of type "${expectedMessageType}", got "${type}"!`);
+  if (type !== objectTypeRepr) {
+    console.error(`expected a message of type "${objectTypeRepr}", got "${type}"!`);
   }
 }
-function checkClientStructure(client) {
+function checkStructure(client) {
   if (!client) {
     console.error("A SMART client is required to use this library!");
   } else if (!client.tokenResponse) {
@@ -7083,31 +7084,25 @@ function checkClientStructure(client) {
     console.error("SMART client is missing a smart_web_messaging_origin launch attribute!");
   }
 }
-var _internal = {
-  targetOrigin: void 0,
-  callback: void 0
-};
-function postMessageHandler(e) {
-  const targetOrigin = _internal.targetOrigin;
-  const messageCallback = _internal.callback;
-  if (targetOrigin && messageCallback) {
-    if (e.origin === targetOrigin && e.data) {
-      checkMessageType(e.data);
-      messageCallback(e.data);
-    }
-  }
-}
 function enablePostMessage(targetOrigin, callback) {
-  console.log("postMessage ENABLED");
-  _internal.targetOrigin = targetOrigin;
-  _internal.callback = callback;
-  window.addEventListener("message", postMessageHandler, false);
+  const handler = function(e) {
+    if (e.origin === targetOrigin && e.data) {
+      checkIsObject(e.data);
+      callback(e.data);
+    }
+  };
+  handlers.set(targetOrigin, window);
+  window.addEventListener("message", handler, false);
+  return () => {
+    handlers.delete(targetOrigin);
+    window.removeEventListener("message", handler, false);
+  };
 }
 function getMessage(messageType, client) {
   if (!messageType) {
     console.error("Messages SHALL specify a messageType");
   }
-  checkClientStructure(client);
+  checkStructure(client);
   return {
     messageType,
     messagingHandle: client.tokenResponse.smart_web_messaging_handle || "",
@@ -7155,18 +7150,18 @@ function getScratchpadDeleteMessage(client, location) {
     }
   };
 }
-function sendMessage(client, message) {
-  checkHasListener();
-  checkMessageType(message);
-  checkClientStructure(client);
-  const targetOrigin = client.tokenResponse.smart_web_messaging_origin;
-  if (targetOrigin !== new URL(targetOrigin).origin) {
-    console.error(`Invalid message origin: '${targetOrigin}'`);
+function sendMessage(smartLaunchClient, message) {
+  checkIsListening(document.defaultView);
+  checkIsObject(message);
+  checkStructure(smartLaunchClient);
+  const ehrOrigin = smartLaunchClient.tokenResponse.smart_web_messaging_origin;
+  if (ehrOrigin !== new URL(ehrOrigin).origin) {
+    console.error(`Invalid message origin: '${ehrOrigin}'`);
   }
   if (window.parent) {
-    window.parent.postMessage(message, targetOrigin);
+    window.parent.postMessage(message, ehrOrigin);
   } else if (window.opener) {
-    window.opener.postMessage(message, targetOrigin);
+    window.opener.postMessage(message, ehrOrigin);
   } else {
     console.error("Unable to send message - no receiver!");
   }
@@ -7192,7 +7187,7 @@ function App() {
   const [messageHandle, setMessageHandle] = useState(mockClient.tokenResponse.smart_web_messaging_handle);
   const [targetOrigin, setTargetOrigin] = useState(mockClient.tokenResponse.smart_web_messaging_origin);
   const init = useCallback(() => {
-    enablePostMessage(targetOrigin, (r) => {
+    return enablePostMessage(targetOrigin, (r) => {
       setResponse(JSON.stringify(r, null, 2));
     });
   }, [targetOrigin]);
@@ -7225,43 +7220,43 @@ function App() {
   function updateMessage(e) {
     setMessage(e.target.value);
   }
-  function stringify2(message2) {
+  function prepopulate(message2) {
     setMessage(JSON.stringify(message2, null, 2));
   }
-  function handshake() {
-    stringify2(getHandshakeMessage(mockClient));
+  function getHandshakeMessage2() {
+    return getHandshakeMessage(mockClient);
   }
-  function uiDone() {
-    stringify2(getUiDoneMessage(mockClient));
+  function getUiDoneMessage2() {
+    return getUiDoneMessage(mockClient);
   }
-  function uiLaunchActivity() {
-    stringify2(getUiLaunchActivityMessage(mockClient, "problem-review", {
+  function getUiLaunchActivityMessage2() {
+    return getUiLaunchActivityMessage(mockClient, "problem-review", {
       problemLocation: "Condition/123"
-    }));
+    });
   }
-  function scratchpadCreate() {
-    stringify2(getScratchpadCreateMessage(mockClient, {
+  function getScratchpadCreateMessage2() {
+    return getScratchpadCreateMessage(mockClient, {
       resourceType: "ServiceRequest",
       status: "draft"
-    }));
+    });
   }
-  function scratchpadDelete() {
+  function getScratchpadDeleteMessage2() {
     const location = "MedicationRequest/456";
-    stringify2(getScratchpadDeleteMessage(mockClient, location));
+    return getScratchpadDeleteMessage(mockClient, location);
   }
-  function scratchpadUpdate() {
+  function getScratchpadUpdateMessage2() {
     const resource = {
       resourceType: "MedicationRequest",
       id: "123",
       status: "draft"
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    stringify2(getScratchpadUpdateMessage(mockClient, resource, location));
+    return getScratchpadUpdateMessage(mockClient, resource, location);
   }
   function sendMessage2() {
     try {
       const m = JSON.parse(message);
-      checkMessageType(m);
+      checkIsObject(m);
       setResponse("Failed to send message to EHR!");
       sendMessage(mockClient, m);
       setResponse("Awaiting EHR response...");
@@ -7273,10 +7268,18 @@ function App() {
   function copyResponseToClipboard() {
     navigator.clipboard.writeText(response);
   }
-  var appTitle = "This demo SMART app is embedded in an EHR.";
+  var appTitle = "EMBEDDED APP";
   if (window.parent === window.self) {
     appTitle = "No EHR detected for this demo SMART app; SEND is disabled!";
   }
+  const messageGetters = {
+    "status.handshake": getHandshakeMessage2,
+    "ui.done": getUiDoneMessage2,
+    "ui.launchActivity": getUiLaunchActivityMessage2,
+    "scratchpad.create": getScratchpadCreateMessage2,
+    "scratchpad.update": getScratchpadUpdateMessage2,
+    "scratchpad.delete": getScratchpadDeleteMessage2
+  };
   return /* @__PURE__ */ react.createElement("div", {
     className: "App"
   }, /* @__PURE__ */ react.createElement("header", {
@@ -7317,24 +7320,33 @@ function App() {
     value: targetOrigin,
     onChange: updateTargetOrigin
   }))))), /* @__PURE__ */ react.createElement("div", {
-    className: "App-buttons"
-  }, /* @__PURE__ */ react.createElement("p", null, "Prepopulate message below with a"), /* @__PURE__ */ react.createElement("button", {
-    onClick: handshake
-  }, "status.handshake"), /* @__PURE__ */ react.createElement("button", {
-    onClick: uiDone
-  }, "ui.done"), /* @__PURE__ */ react.createElement("button", {
-    onClick: uiLaunchActivity
-  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadCreate
-  }, "scratchpad.create"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadUpdate
-  }, "scratchpad.update"), /* @__PURE__ */ react.createElement("button", {
-    onClick: scratchpadDelete
-  }, "scratchpad.delete")), /* @__PURE__ */ react.createElement("div", {
     className: "message-panel"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "to-send"
-  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable")), " ", "SMART Web Message to send to EHR:"), /* @__PURE__ */ react.createElement("textarea", {
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "send-header"
+  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable ")), "Message to send to EHR:"), /* @__PURE__ */ react.createElement("select", {
+    id: "template",
+    onChange: (e) => {
+      const selected = e.target.selectedOptions[0].label;
+      prepopulate(messageGetters[selected]());
+      e.target.selectedIndex = 0;
+    }
+  }, /* @__PURE__ */ react.createElement("option", {
+    value: ""
+  }, "Insert a message..."), /* @__PURE__ */ react.createElement("option", {
+    value: "status.handshake"
+  }, "status.handshake"), /* @__PURE__ */ react.createElement("option", {
+    value: "ui.done"
+  }, "ui.done"), /* @__PURE__ */ react.createElement("option", {
+    value: "ui.launchActivity"
+  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.create"
+  }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.update"
+  }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.delete"
+  }, "scratchpad.delete"))), /* @__PURE__ */ react.createElement("textarea", {
     className: "App-message",
     value: message,
     onChange: updateMessage,
@@ -7353,7 +7365,7 @@ function App() {
     disabled: window.parent === window.self
   }, "SEND"))), /* @__PURE__ */ react.createElement("div", {
     className: "from-ehr"
-  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Read-only")), " ", "SMART Web Message EHR response:"), /* @__PURE__ */ react.createElement("textarea", {
+  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Read-only ")), "EHR response:"), /* @__PURE__ */ react.createElement("textarea", {
     disabled: true,
     className: "App-message",
     value: response,
@@ -7367,8 +7379,8 @@ function App() {
   }, /* @__PURE__ */ react.createElement("a", {
     target: "_blank",
     rel: "noreferrer noopener",
-    href: "https://tinyurl.com/swm-c10n-code"
-  }, "https://tinyurl.com/swm-c10n-code")));
+    href: "https://tinyurl.com/swm-dd-code"
+  }, "https://tinyurl.com/swm-dd-code")));
 }
 var App_default = App;
 
