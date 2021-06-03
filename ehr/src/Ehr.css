@@ -103,12 +103,13 @@ textarea {
   flex-direction: column;
   background-color:slategray;
 }
-
+.to-send .send-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
 .to-send select {
-  position: absolute;
-  right: 4vw;
-  margin-top: 0.4rem;
-  padding: 0.1rem;
+  margin-bottom: 0.4rem;
 }
 
 .send-controls {

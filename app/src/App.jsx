@@ -77,42 +77,38 @@ function App() {
     setMessage(e.target.value);
   }
 
-  function stringify(message) {
+  function prepopulate(message) {
     setMessage(JSON.stringify(message, null, 2));
   }
 
-  function handshake() {
-    stringify(swm.getHandshakeMessage(mockClient));
+  function getHandshakeMessage() {
+    return swm.getHandshakeMessage(mockClient);
   }
 
-  function uiDone() {
-    stringify(swm.getUiDoneMessage(mockClient));
+  function getUiDoneMessage() {
+    return swm.getUiDoneMessage(mockClient);
   }
 
-  function uiLaunchActivity() {
-    stringify(
-      swm.getUiLaunchActivityMessage(mockClient, 'problem-review', {
-        problemLocation: 'Condition/123',
-      }),
-    );
+  function getUiLaunchActivityMessage() {
+    return swm.getUiLaunchActivityMessage(mockClient, 'problem-review', {
+      problemLocation: 'Condition/123',
+    });
   }
 
-  function scratchpadCreate() {
-    stringify(
-      swm.getScratchpadCreateMessage(mockClient, {
-        resourceType: 'ServiceRequest',
-        status: 'draft',
-      }),
-    );
+  function getScratchpadCreateMessage() {
+    return swm.getScratchpadCreateMessage(mockClient, {
+      resourceType: 'ServiceRequest',
+      status: 'draft',
+    });
   }
 
-  function scratchpadDelete() {
+  function getScratchpadDeleteMessage() {
     // TODO: read the contents of the scratchpad to set the location?
     const location = 'MedicationRequest/456';
-    stringify(swm.getScratchpadDeleteMessage(mockClient, location));
+    return swm.getScratchpadDeleteMessage(mockClient, location);
   }
 
-  function scratchpadUpdate() {
+  function getScratchpadUpdateMessage() {
     // TODO: read the contents of the scratchpad to set the resource?
     const resource = {
       resourceType: 'MedicationRequest',
@@ -120,7 +116,7 @@ function App() {
       status: 'draft',
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    stringify(swm.getScratchpadUpdateMessage(mockClient, resource, location));
+    return swm.getScratchpadUpdateMessage(mockClient, resource, location);
   }
 
   function sendMessage() {
@@ -147,6 +143,15 @@ function App() {
   if (window.parent === window.self) {
     appTitle = 'No EHR detected for this demo SMART app; SEND is disabled!';
   }
+
+  const messageGetters = {
+    'status.handshake': getHandshakeMessage,
+    'ui.done': getUiDoneMessage,
+    'ui.launchActivity': getUiLaunchActivityMessage,
+    'scratchpad.create': getScratchpadCreateMessage,
+    'scratchpad.update': getScratchpadUpdateMessage,
+    'scratchpad.delete': getScratchpadDeleteMessage,
+  };
 
   // Return the App component.
   return (
@@ -192,23 +197,34 @@ function App() {
             </div>
           </div>
         </dialog>
-        <div className="App-buttons">
-          <p>Prepopulate message below with a</p>
-          <button onClick={handshake}>status.handshake</button>
-          <button onClick={uiDone}>ui.done</button>
-          <button onClick={uiLaunchActivity}>ui.launchActivity</button>
-          <button onClick={scratchpadCreate}>scratchpad.create</button>
-          <button onClick={scratchpadUpdate}>scratchpad.update</button>
-          <button onClick={scratchpadDelete}>scratchpad.delete</button>
-        </div>
         <div className="message-panel">
           <div className="to-send">
-            <p>
-              <b>
-                <i>Editable</i>
-              </b>{' '}
-              SMART Web Message to send to EHR:
-            </p>
+            <div className="send-header">
+              <p>
+                <b>
+                  <i>Editable </i>
+                </b>
+                Message to send to EHR:
+              </p>
+              <select
+                id="template"
+                onChange={(e) => {
+                  const selected = e.target.selectedOptions[0].label;
+                  prepopulate(messageGetters[selected]());
+                  // Resetting the selected index allows for the same option to
+                  // be selected repeatedly.
+                  e.target.selectedIndex = 0;
+                }}
+              >
+                <option value="">Insert a message...</option>
+                <option value="status.handshake">status.handshake</option>
+                <option value="ui.done">ui.done</option>
+                <option value="ui.launchActivity">ui.launchActivity</option>
+                <option value="scratchpad.create">scratchpad.create</option>
+                <option value="scratchpad.update">scratchpad.update</option>
+                <option value="scratchpad.delete">scratchpad.delete</option>
+              </select>
+            </div>
             <textarea
               className="App-message"
               value={message}
@@ -236,9 +252,9 @@ function App() {
           <div className="from-ehr">
             <p>
               <b>
-                <i>Read-only</i>
-              </b>{' '}
-              SMART Web Message EHR response:
+                <i>Read-only </i>
+              </b>
+              EHR response:
             </p>
             <textarea
               disabled={true}
