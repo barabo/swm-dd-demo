@@ -7344,10 +7344,7 @@ function Ehr() {
   }, "SMART Web Messaging"), "  Demo App"), /* @__PURE__ */ react.createElement("button", {
     className: "config-button",
     onClick: openConfig
-  }, /* @__PURE__ */ react.createElement("img", {
-    src: "/ehr/dist/settings.png",
-    alt: "configure"
-  }))), /* @__PURE__ */ react.createElement("main", {
+  }, "configure")), /* @__PURE__ */ react.createElement("main", {
     className: "Site-content"
   }, /* @__PURE__ */ react.createElement("dialog", {
     className: "activity-panel",
