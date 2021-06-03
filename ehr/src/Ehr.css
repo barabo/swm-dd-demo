@@ -1,5 +1,5 @@
 .Ehr {
-  background-color: #282c34;
+  background-color: #002f25;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -74,29 +74,6 @@
   height: 100vh;
 }
 
-.Site-content .Ehr-buttons {
-  background: greenyellow;
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: left;
-  padding: 2px;
-}
-
-.Site-content .Ehr-buttons p {
-  color: black;
-  margin: 0.4rem;
-  font-size: calc(4px + 1vmin);
-  max-height: 3vh;
-  flex: 1;
-}
-
-.Site-content .Ehr-buttons button {
-  margin: 3px;
-  font-size: calc(4px + 1vmin);
-  max-height: 3vh;
-}
-
 .message-panel {
   display: flex;
   max-height: 35vh;
@@ -125,6 +102,14 @@ textarea {
   display: flex;
   flex-direction: column;
   background-color:slategray;
+}
+.to-send .send-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+.to-send select {
+  margin-bottom: 0.4rem;
 }
 
 .send-controls {

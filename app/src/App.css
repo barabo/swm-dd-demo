@@ -75,22 +75,6 @@
   height: 100vh;
 }
 
-.App-buttons {
-  display: flex;
-  flex-direction: row;
-  justify-content: left;
-  padding: 2px;
-}
-
-.App-buttons p {
-  color: black;
-  font-size: calc(10px + 1vmin);
-}
-
-.App-buttons button {
-  margin: 3px;
-}
-
 .message-panel {
   display: flex;
   height: 75vh;
@@ -111,6 +95,14 @@
   display: flex;
   flex-direction: column;
   background-color: lightpink;
+}
+.to-send .send-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+.to-send select {
+  margin-bottom: 0.4rem;
 }
 
 .send-controls {
