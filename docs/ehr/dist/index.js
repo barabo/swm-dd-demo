@@ -7014,7 +7014,7 @@ var reactDom = createCommonjsModule(function(module) {
 });
 var react_dom_default = reactDom;
 
-// build/_snowpack/pkg/uuid.js
+// build/ehr/dist/meta/pkg/uuid.js
 var getRandomValues;
 var rnds8 = new Uint8Array(16);
 function rng() {
@@ -7058,37 +7058,32 @@ function v4(options, buf, offset) {
 }
 
 // build/ehr/dist/swm.js
-function checkHasListener() {
-  if (!_internal.callback || !_internal.targetOrigin) {
+var handlers = new Map();
+function checkIsListening(window2) {
+  if (![...handlers.values()].includes(window2)) {
     console.error("No listener configured - unable to receive from target!");
   }
 }
-var expectedMessageType = Object.prototype.toString.call({});
-function checkMessageType(message) {
+function checkIsObject(message) {
+  const objectTypeRepr = Object.prototype.toString.call({});
   const type = Object.prototype.toString.call(message);
-  if (type !== expectedMessageType) {
-    console.error(`expected a message of type "${expectedMessageType}", got "${type}"!`);
-  }
-}
-var _internal = {
-  targetOrigin: void 0,
-  callback: void 0
-};
-function postMessageHandler(e) {
-  const targetOrigin = _internal.targetOrigin;
-  const messageCallback = _internal.callback;
-  if (targetOrigin && messageCallback) {
-    if (e.origin === targetOrigin && e.data) {
-      checkMessageType(e.data);
-      messageCallback(e.data);
-    }
+  if (type !== objectTypeRepr) {
+    console.error(`expected a message of type "${objectTypeRepr}", got "${type}"!`);
   }
 }
 function enablePostMessage(targetOrigin, callback) {
-  console.log("postMessage ENABLED");
-  _internal.targetOrigin = targetOrigin;
-  _internal.callback = callback;
-  window.addEventListener("message", postMessageHandler, false);
+  const handler = function(e) {
+    if (e.origin === targetOrigin && e.data) {
+      checkIsObject(e.data);
+      callback(e.data);
+    }
+  };
+  handlers.set(targetOrigin, window);
+  window.addEventListener("message", handler, false);
+  return () => {
+    handlers.delete(targetOrigin);
+    window.removeEventListener("message", handler, false);
+  };
 }
 function getResponse(responseToMessageId) {
   if (!responseToMessageId) {
@@ -7143,8 +7138,8 @@ function getScratchpadDeleteResponse(responseToMessageId, status, outcome) {
   return getScratchpadResponse(responseToMessageId, status, null, outcome);
 }
 function sendResponse(appWindow, message, appOrigin) {
-  checkHasListener();
-  checkMessageType(message);
+  checkIsListening(document.defaultView);
+  checkIsObject(message);
   if (appOrigin !== new URL(appOrigin).origin) {
     console.error(`Invalid response origin: '${appOrigin}'`);
   }
@@ -7167,7 +7162,7 @@ function Ehr() {
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
   const init = useCallback(() => {
-    enablePostMessage(appOrigin, (m) => {
+    return enablePostMessage(appOrigin, (m) => {
       if (sessionHandles.has(m.messagingHandle)) {
         setResponse(`Awaiting EHR action in response to the received '${m?.messageType}' message...`);
         setMessage(m);
@@ -7178,6 +7173,12 @@ function Ehr() {
     });
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
+  useEffect(() => {
+    const getAutoResponse = responseGetters[message?.messageType];
+    if (getAutoResponse && document.getElementById("auto-reply").checked) {
+      prepopulate(getAutoResponse());
+    }
+  }, [message]);
   useEffect(() => {
     if (document.getElementById("auto-send").checked && isResponseSendable()) {
       sendResponse2();
@@ -7260,7 +7261,7 @@ function Ehr() {
   function sendResponse2() {
     try {
       const r = JSON.parse(response);
-      checkMessageType(r);
+      checkIsObject(r);
       const window2 = sessionHandles.get(message.messagingHandle);
       if (!window2) {
         console.error("Unknown session handle", sessionHandle);
@@ -7321,11 +7322,22 @@ function Ehr() {
     popup.close();
     prepopulate(getUiLaunchActivityResponse2());
   }
+  function saveSessionHandle() {
+    sessionHandles.set(sessionHandle, document.getElementById("app-iframe").contentWindow);
+  }
+  const responseGetters = {
+    "status.handshake": getHandshakeResponse2,
+    "ui.done": getUiDoneResponse2,
+    "ui.launchActivity": getUiLaunchActivityResponse2,
+    "scratchpad.create": getScratchpadCreateResponse2,
+    "scratchpad.update": getScratchpadUpdateResponse2,
+    "scratchpad.delete": getScratchpadDeleteResponse2
+  };
   return /* @__PURE__ */ react.createElement("div", {
     className: "Ehr"
   }, /* @__PURE__ */ react.createElement("header", {
     className: "Ehr-header"
-  }, /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
+  }, /* @__PURE__ */ react.createElement("br", null), /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
     target: "_blank",
     rel: "noreferrer noopener",
     href: "https://build.fhir.org/ig/HL7/smart-web-messaging/"
@@ -7369,25 +7381,21 @@ function Ehr() {
     type: "text",
     value: appUrl,
     onChange: updateAppUrl
+  }))), /* @__PURE__ */ react.createElement("div", {
+    className: "config-field"
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "config-label"
+  }, /* @__PURE__ */ react.createElement("p", null, "Auto-response")), /* @__PURE__ */ react.createElement("div", {
+    className: "config-text-value"
+  }, /* @__PURE__ */ react.createElement("input", {
+    id: "auto-reply",
+    type: "checkbox",
+    defaultChecked: true
   }))))), /* @__PURE__ */ react.createElement("div", {
-    className: "Ehr-buttons"
-  }, /* @__PURE__ */ react.createElement("p", null, "Prepopulate response message below for the incoming"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getHandshakeResponse2())
-  }, "status.handshake"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getUiDoneResponse2())
-  }, "ui.done"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getUiLaunchActivityResponse2())
-  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getScratchpadCreateResponse2())
-  }, "scratchpad.create"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getScratchpadUpdateResponse2())
-  }, "scratchpad.update"), /* @__PURE__ */ react.createElement("button", {
-    onClick: () => prepopulate(getScratchpadDeleteResponse2())
-  }, "scratchpad.delete")), /* @__PURE__ */ react.createElement("div", {
     className: "message-panel"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "from-app"
-  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Read-only")), " ", "SMART Web Message ", /* @__PURE__ */ react.createElement("i", null, "received"), " from App:"), /* @__PURE__ */ react.createElement("textarea", {
+  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Read-only ")), "message ", /* @__PURE__ */ react.createElement("i", null, "received"), " from App:"), /* @__PURE__ */ react.createElement("textarea", {
     disabled: true,
     className: "App-message",
     value: messageFromApp,
@@ -7398,7 +7406,31 @@ function Ehr() {
     onClick: copyResponseToClipboard
   }, "Copy to clipboard")), /* @__PURE__ */ react.createElement("div", {
     className: "to-send"
-  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable")), " ", "SMART Web Message ", /* @__PURE__ */ react.createElement("i", null, "response"), " to send to App:"), /* @__PURE__ */ react.createElement("textarea", {
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "send-header"
+  }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable ")), /* @__PURE__ */ react.createElement("i", null, "response"), " to send to App:"), /* @__PURE__ */ react.createElement("select", {
+    disabled: !messageFromApp,
+    id: "template",
+    onChange: (e) => {
+      const selected = e.target.selectedOptions[0].label;
+      prepopulate(responseGetters[selected]());
+      e.target.selectedIndex = 0;
+    }
+  }, /* @__PURE__ */ react.createElement("option", {
+    value: ""
+  }, "Insert a response..."), /* @__PURE__ */ react.createElement("option", {
+    value: "status.handshake"
+  }, "status.handshake"), /* @__PURE__ */ react.createElement("option", {
+    value: "ui.done"
+  }, "ui.done"), /* @__PURE__ */ react.createElement("option", {
+    value: "ui.launchActivity"
+  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.create"
+  }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.update"
+  }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.delete"
+  }, "scratchpad.delete"))), /* @__PURE__ */ react.createElement("textarea", {
     id: "responseText",
     className: "App-message",
     value: response,
@@ -7446,9 +7478,7 @@ function Ehr() {
     id: "app-iframe",
     src: appUrl,
     allow: "clipboard-write",
-    onLoad: () => {
-      sessionHandles.set(sessionHandle, document.getElementById("app-iframe").contentWindow);
-    }
+    onLoad: saveSessionHandle
   }))), /* @__PURE__ */ react.createElement("footer", {
     className: "Ehr-footer"
   }, /* @__PURE__ */ react.createElement("p", null, "EHR Footer")));

@@ -1,5 +1,5 @@
 .Ehr {
-  background-color: #282c34;
+  background-color: #002f25;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -9,20 +9,18 @@
 .Ehr-header {
   background: #01a77e;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-between;
   color: #c0ff33;
-  padding: 0.75vmin;
 }
 
 .config-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 2px;
-  margin: 1.5vmin;
+  display: flex;
+  padding: 0.1rem;
+  margin: 0.5vmin;
+}
+.config-button img {
+  height: 2rem;
 }
 .config-panel {
   background-color: lightpink;
@@ -64,9 +62,11 @@
 .config-field input {
   font-size: calc(2px + 1vmin);
   font-family: monospace;
-  width:100%;
   min-height: 2vmax;
   padding: 2px;
+}
+.config-field input[type=text] {
+  width: 100%;
 }
 
 .Site-content {
@@ -74,35 +74,11 @@
   height: 100vh;
 }
 
-.Site-content .Ehr-buttons {
-  background: greenyellow;
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: left;
-  padding: 2px;
-}
-
-.Site-content .Ehr-buttons p {
-  color: black;
-  margin: 0.4rem;
-  font-size: calc(4px + 1vmin);
-  max-height: 3vh;
-  flex: 1;
-}
-
-.Site-content .Ehr-buttons button {
-  margin: 3px;
-  font-size: calc(4px + 1vmin);
-  max-height: 3vh;
-}
-
 .message-panel {
   display: flex;
   max-height: 35vh;
   min-height: 30vh;
   width: 95vw;
-  flex-direction: row;
   margin: 1vh;
 }
 
@@ -126,10 +102,17 @@ textarea {
   flex-direction: column;
   background-color:slategray;
 }
+.to-send .send-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+.to-send select {
+  margin-bottom: 0.4rem;
+}
 
 .send-controls {
   display: flex;
-  flex-direction: row;
   margin: 5px;
   white-space: nowrap;
   max-height: 1.5rem;
@@ -174,7 +157,6 @@ textarea {
 }
 .Ehr-scratchpad div.row {
   display: flex;
-  flex-direction: row;
 }
 .Ehr-scratchpad .apply-message {
   background: #FFF3;
@@ -205,7 +187,6 @@ textarea {
 }
 .Embedded-app .ui-buttons {
   display: flex;
-  flex-direction: row;
   margin: 3vh;
   margin-bottom: 1vh;
 }

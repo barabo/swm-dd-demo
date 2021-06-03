@@ -28,42 +28,36 @@ code {
 
 /* build/app/dist/App.css */
 .App {
+  background-color: lightyellow;
   text-align: center;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-.App code {
-  background: #FFF3;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
 .App p {
   margin: 0.4rem;
-  color: #cafe;
+  color: darkred;
   font-size: calc(10px + 2vmin);
   text-align: left;
 }
 .App pre {
-  color: #c0ff33;
-  background: #FFF3;
   padding: 4px 8px;
   border-radius: 4px;
   text-align: left;
 }
 .App-header {
-  background-color: #caf3;
+  background-color: lightgray;
   display: flex;
-  flex-direction: row;
-  font-size: calc(10px + 2vmin);
-  color: #cafe;
+  align-items: center;
+  justify-content: space-between;
 }
 .config-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 2px;
-  margin: 1.5vmin;
+  display: flex;
+  padding: 0.1rem;
+  margin: 0.5vmin;
+}
+.config-button img {
+  height: 1.5rem;
 }
 .config-panel {
   background-color: lightpink;
@@ -102,22 +96,9 @@ code {
   min-height: 2vmax;
 }
 .App main {
+  background-color: #ffffff99;
   flex: 1;
   height: 100vh;
-}
-.App-buttons {
-  background: lightgray;
-  display: flex;
-  flex-direction: row;
-  justify-content: left;
-  padding: 2px;
-}
-.App-buttons p {
-  color: black;
-  font-size: calc(10px + 1vmin);
-}
-.App-buttons button {
-  margin: 3px;
 }
 .message-panel {
   display: flex;
@@ -126,7 +107,7 @@ code {
 }
 .message-panel p {
   font-size: calc(10px + 1vmin);
-  color: #61dafb;
+  color: darkred;
 }
 .message-panel div {
   padding: 1vw 1vw 2vw 2vw;
@@ -135,10 +116,15 @@ code {
 .to-send {
   display: flex;
   flex-direction: column;
-  background-color: lightslategrey;
+  background-color: lightpink;
 }
-.send-button {
-  background-color: rgba(8, 200, 8, 0.329);
+.to-send .send-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 0;
+}
+.to-send select {
+  margin-bottom: 0.4rem;
 }
 .send-controls {
   display: flex;
@@ -148,9 +134,13 @@ code {
   max-height: 1.5rem;
 }
 .send-controls button {
-  background-color: rgba(8, 200, 8, 0.329);
+  color: red;
+  font-weight: bold;
   width: 100%;
   margin-left: 5px;
+}
+.send-controls button[disabled] {
+  color: gray;
 }
 .send-controls label[disabled] {
   color: darkgray;
@@ -166,13 +156,12 @@ code {
   flex: 1;
 }
 .App-footer {
-  background-color: #caf3;
+  background-color: lightgray;
   display: flex;
   flex-direction: column;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: #cafe;
 }
 .App-footer a {
-  color: #61dafb;
+  color: red;
 }
