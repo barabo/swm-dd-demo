@@ -260,6 +260,15 @@ function Ehr() {
     );
   }
 
+  const responseGetters = {
+    'status.handshake': getHandshakeResponse,
+    'ui.done': getUiDoneResponse,
+    'ui.launchActivity': getUiLaunchActivityResponse,
+    'scratchpad.create': getScratchpadCreateResponse,
+    'scratchpad.update': getScratchpadUpdateResponse,
+    'scratchpad.delete': getScratchpadDeleteResponse,
+  };
+
   return (
     <div className="Ehr">
       <header className="Ehr-header">
@@ -283,7 +292,6 @@ function Ehr() {
           <pre>{JSON.stringify(activity, null, 2)}</pre>
           <button onClick={closeActivity}>Close</button>
         </dialog>
-
         <dialog className="config-panel" id="config-panel">
           <div className="config-header">
             <div>EHR Settings</div>
@@ -318,35 +326,13 @@ function Ehr() {
             </div>
           </div>
         </dialog>
-
-        <div className="Ehr-buttons">
-          <p>Prepopulate response message below for the incoming</p>
-          <button onClick={() => prepopulate(getHandshakeResponse())}>
-            status.handshake
-          </button>
-          <button onClick={() => prepopulate(getUiDoneResponse())}>
-            ui.done
-          </button>
-          <button onClick={() => prepopulate(getUiLaunchActivityResponse())}>
-            ui.launchActivity
-          </button>
-          <button onClick={() => prepopulate(getScratchpadCreateResponse())}>
-            scratchpad.create
-          </button>
-          <button onClick={() => prepopulate(getScratchpadUpdateResponse())}>
-            scratchpad.update
-          </button>
-          <button onClick={() => prepopulate(getScratchpadDeleteResponse())}>
-            scratchpad.delete
-          </button>
-        </div>
         <div className="message-panel">
           <div className="from-app">
             <p>
               <b>
-                <i>Read-only</i>
-              </b>{' '}
-              SMART Web Message <i>received</i> from App:
+                <i>Read-only </i>
+              </b>
+              message <i>received</i> from App:
             </p>
             <textarea
               disabled
@@ -360,12 +346,33 @@ function Ehr() {
             </button>
           </div>
           <div className="to-send">
-            <p>
-              <b>
-                <i>Editable</i>
-              </b>{' '}
-              SMART Web Message <i>response</i> to send to App:
-            </p>
+            <div className="send-header">
+              <p>
+                <b>
+                  <i>Editable </i>
+                </b>
+                <i>response</i> to send to App:
+              </p>
+              <select
+                disabled={!messageFromApp}
+                id="template"
+                onChange={(e) => {
+                  const selected = e.target.selectedOptions[0].label;
+                  prepopulate(responseGetters[selected]());
+                  // Resetting the selected index allows for the same option to
+                  // be selected repeatedly.
+                  e.target.selectedIndex = 0;
+                }}
+              >
+                <option value="">Insert a response...</option>
+                <option value="status.handshake">status.handshake</option>
+                <option value="ui.done">ui.done</option>
+                <option value="ui.launchActivity">ui.launchActivity</option>
+                <option value="scratchpad.create">scratchpad.create</option>
+                <option value="scratchpad.update">scratchpad.update</option>
+                <option value="scratchpad.delete">scratchpad.delete</option>
+              </select>
+            </div>
             <textarea
               id="responseText"
               className="App-message"
