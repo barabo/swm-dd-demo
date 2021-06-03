@@ -46,6 +46,13 @@ function App() {
     }
   }, [message]);
 
+  // Update the response panel with a hint when the message changes.
+  useEffect(() => {
+    if (message !== '{}' && !document.getElementById('auto-send').checked) {
+      setResponse('Click SEND to send message to EHR...');
+    }
+  }, [message]);
+
   function openConfig() {
     document.getElementById('config-panel').showModal();
   }
