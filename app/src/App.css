@@ -20,18 +20,19 @@
 .App-header {
   background-color: lightgray;
   display: flex;
-  flex-direction: row;
-  font-size: calc(10px + 2vmin);
-  color: lightpink;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .config-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 2px;
-  margin: 1.5vmin;
+  display: flex;
+  padding: 0.1rem;
+  margin: 0.5vmin;
 }
+.config-button img {
+  height: 1.5rem;
+}
+
 .config-panel {
   background-color: lightpink;
   border-radius: 1vmin;

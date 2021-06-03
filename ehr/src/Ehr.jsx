@@ -281,6 +281,7 @@ function Ehr() {
   return (
     <div className="Ehr">
       <header className="Ehr-header">
+        <br></br>
         <p>
           Mock EHR &nbsp;
           <a
@@ -293,7 +294,7 @@ function Ehr() {
           &nbsp; Demo App
         </p>
         <button className="config-button" onClick={openConfig}>
-          configure
+          <img src="/ehr/dist/settings.png" alt="configure"></img>
         </button>
       </header>
       <main className="Site-content">

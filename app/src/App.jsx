@@ -166,7 +166,7 @@ function App() {
       <header className="App-header">
         <p>{appTitle}</p>
         <button className="config-button" onClick={openConfig}>
-          configure
+          <img src="/app/dist/settings.png" alt="configure"></img>
         </button>
       </header>
       <main className="App-main">
