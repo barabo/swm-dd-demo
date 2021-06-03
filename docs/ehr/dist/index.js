@@ -7337,14 +7337,17 @@ function Ehr() {
     className: "Ehr"
   }, /* @__PURE__ */ react.createElement("header", {
     className: "Ehr-header"
-  }, /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
+  }, /* @__PURE__ */ react.createElement("br", null), /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
     target: "_blank",
     rel: "noreferrer noopener",
     href: "https://build.fhir.org/ig/HL7/smart-web-messaging/"
   }, "SMART Web Messaging"), "  Demo App"), /* @__PURE__ */ react.createElement("button", {
     className: "config-button",
     onClick: openConfig
-  }, "configure")), /* @__PURE__ */ react.createElement("main", {
+  }, /* @__PURE__ */ react.createElement("img", {
+    src: "/ehr/dist/settings.png",
+    alt: "configure"
+  }))), /* @__PURE__ */ react.createElement("main", {
     className: "Site-content"
   }, /* @__PURE__ */ react.createElement("dialog", {
     className: "activity-panel",

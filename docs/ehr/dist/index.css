@@ -37,19 +37,17 @@ code {
 .Ehr-header {
   background: #01a77e;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  justify-content: space-between;
   color: #c0ff33;
-  padding: 0.75vmin;
 }
 .config-button {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 2px;
-  margin: 1.5vmin;
+  display: flex;
+  padding: 0.1rem;
+  margin: 0.5vmin;
+}
+.config-button img {
+  height: 2rem;
 }
 .config-panel {
   background-color: lightpink;
@@ -106,7 +104,6 @@ code {
   max-height: 35vh;
   min-height: 30vh;
   width: 95vw;
-  flex-direction: row;
   margin: 1vh;
 }
 .Site-content .message-panel p {
@@ -136,7 +133,6 @@ textarea {
 }
 .send-controls {
   display: flex;
-  flex-direction: row;
   margin: 5px;
   white-space: nowrap;
   max-height: 1.5rem;
@@ -177,7 +173,6 @@ textarea {
 }
 .Ehr-scratchpad div.row {
   display: flex;
-  flex-direction: row;
 }
 .Ehr-scratchpad .apply-message {
   background: #FFF3;
@@ -207,7 +202,6 @@ textarea {
 }
 .Embedded-app .ui-buttons {
   display: flex;
-  flex-direction: row;
   margin: 3vh;
   margin-bottom: 1vh;
 }
