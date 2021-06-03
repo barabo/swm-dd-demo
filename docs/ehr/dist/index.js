@@ -7174,6 +7174,12 @@ function Ehr() {
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
   useEffect(() => {
+    const getAutoResponse = responseGetters[message?.messageType];
+    if (getAutoResponse && document.getElementById("auto-reply").checked) {
+      prepopulate(getAutoResponse());
+    }
+  }, [message]);
+  useEffect(() => {
     if (document.getElementById("auto-send").checked && isResponseSendable()) {
       sendResponse2();
     }
@@ -7375,6 +7381,16 @@ function Ehr() {
     type: "text",
     value: appUrl,
     onChange: updateAppUrl
+  }))), /* @__PURE__ */ react.createElement("div", {
+    className: "config-field"
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "config-label"
+  }, /* @__PURE__ */ react.createElement("p", null, "Auto-response")), /* @__PURE__ */ react.createElement("div", {
+    className: "config-text-value"
+  }, /* @__PURE__ */ react.createElement("input", {
+    id: "auto-reply",
+    type: "checkbox",
+    defaultChecked: true
   }))))), /* @__PURE__ */ react.createElement("div", {
     className: "message-panel"
   }, /* @__PURE__ */ react.createElement("div", {
