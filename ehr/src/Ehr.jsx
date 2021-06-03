@@ -49,6 +49,15 @@ function Ehr() {
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
 
+  // Automatically insert a response template if the received message matches a
+  // known messageType.
+  useEffect(() => {
+    const getAutoResponse = responseGetters[message?.messageType];
+    if (getAutoResponse && document.getElementById('auto-reply').checked) {
+      prepopulate(getAutoResponse());
+    }
+  }, [message]);
+
   // Auto-send should trigger when the response is updated
   useEffect(() => {
     if (document.getElementById('auto-send').checked && isResponseSendable()) {
@@ -322,6 +331,14 @@ function Ehr() {
                   value={appUrl}
                   onChange={updateAppUrl}
                 ></input>
+              </div>
+            </div>
+            <div className="config-field">
+              <div className="config-label">
+                <p>Auto-response</p>
+              </div>
+              <div className="config-text-value">
+                <input id="auto-reply" type="checkbox" defaultChecked></input>
               </div>
             </div>
           </div>

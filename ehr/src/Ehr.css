@@ -64,9 +64,11 @@
 .config-field input {
   font-size: calc(2px + 1vmin);
   font-family: monospace;
-  width:100%;
   min-height: 2vmax;
   padding: 2px;
+}
+.config-field input[type=text] {
+  width: 100%;
 }
 
 .Site-content {
