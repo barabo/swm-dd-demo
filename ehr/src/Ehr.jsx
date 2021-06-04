@@ -314,126 +314,131 @@ function Ehr() {
         </button>
       </header>
       <main className="Site-content">
-        <dialog className="activity-panel" id="activity-panel">
-          <pre>{JSON.stringify(activity, null, 2)}</pre>
-          <button onClick={closeActivity}>Close</button>
-        </dialog>
-        <dialog className="config-panel" id="config-panel">
-          <div className="config-header">
-            <div>EHR Settings</div>
-            <button className="close-config" onClick={closeConfig}>
-              Close
-            </button>
-          </div>
-          <div className="config-settings">
-            <div className="config-field">
-              <div className="config-label">
-                <p>Session Handle</p>
+        <div className="ehr-main">
+          <dialog className="activity-panel" id="activity-panel">
+            <pre>{JSON.stringify(activity, null, 2)}</pre>
+            <button onClick={closeActivity}>Close</button>
+          </dialog>
+          <dialog className="config-panel" id="config-panel">
+            <div className="config-header">
+              <div>EHR Settings</div>
+              <button className="close-config" onClick={closeConfig}>
+                Close
+              </button>
+            </div>
+            <div className="config-settings">
+              <div className="config-field">
+                <div className="config-label">
+                  <p>Session Handle</p>
+                </div>
+                <div className="config-text-value">
+                  <input
+                    type="text"
+                    value={sessionHandle}
+                    onChange={updateSessionHandle}
+                  ></input>
+                </div>
               </div>
-              <div className="config-text-value">
-                <input
-                  type="text"
-                  value={sessionHandle}
-                  onChange={updateSessionHandle}
-                ></input>
+              <div className="config-field">
+                <div className="config-label">
+                  <p>App URL</p>
+                </div>
+                <div className="config-text-value">
+                  <input
+                    type="text"
+                    value={appUrl}
+                    onChange={updateAppUrl}
+                  ></input>
+                </div>
+              </div>
+              <div className="config-field">
+                <div className="config-label">
+                  <p>Auto-response</p>
+                </div>
+                <div className="config-text-value">
+                  <input id="auto-reply" type="checkbox" defaultChecked></input>
+                </div>
               </div>
             </div>
-            <div className="config-field">
-              <div className="config-label">
-                <p>App URL</p>
-              </div>
-              <div className="config-text-value">
-                <input
-                  type="text"
-                  value={appUrl}
-                  onChange={updateAppUrl}
-                ></input>
-              </div>
-            </div>
-            <div className="config-field">
-              <div className="config-label">
-                <p>Auto-response</p>
-              </div>
-              <div className="config-text-value">
-                <input id="auto-reply" type="checkbox" defaultChecked></input>
-              </div>
+          </dialog>
+          <div className="scratchpad">
+            <div className="row">
+              <pre id="scratchpad" style={{ display: 'none' }}>
+                {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
+              </pre>
             </div>
           </div>
-        </dialog>
-        <div className="scratchpad">
-          <div className="row">
-            <pre id="scratchpad" style={{ display: 'none' }}>
-              {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
-            </pre>
-          </div>
-        </div>
-        <div className="message-panel">
-          <div className="from-app">
-            <p>
-              <b>
-                <i>Read-only </i>
-              </b>
-              message <i>received</i> from App:
-            </p>
-            <textarea
-              disabled
-              className="App-message"
-              value={messageFromApp}
-              readOnly={true}
-              spellCheck={false}
-            />
-            <button className="copy-response" onClick={copyResponseToClipboard}>
-              Copy to clipboard
-            </button>
-          </div>
-          <div className="to-send">
-            <div className="send-header">
+          <div className="message-panel">
+            <div className="from-app">
               <p>
                 <b>
-                  <i>Editable </i>
+                  <i>Read-only </i>
                 </b>
-                <i>response</i> to send to App:
+                message <i>received</i> from App:
               </p>
-              <select
-                disabled={!messageFromApp}
-                id="template"
-                onChange={(e) => {
-                  const selected = e.target.selectedOptions[0].label;
-                  prepopulate(responseGetters[selected]());
-                  // Resetting the selected index allows for the same option to
-                  // be selected repeatedly.
-                  e.target.selectedIndex = 0;
-                }}
-              >
-                <option value="">Insert a response...</option>
-                <option value="status.handshake">status.handshake</option>
-                <option value="ui.done">ui.done</option>
-                <option value="ui.launchActivity">ui.launchActivity</option>
-                <option value="scratchpad.create">scratchpad.create</option>
-                <option value="scratchpad.update">scratchpad.update</option>
-                <option value="scratchpad.delete">scratchpad.delete</option>
-              </select>
-            </div>
-            <textarea
-              id="responseText"
-              className="App-message"
-              value={response}
-              onChange={updateResponse}
-              spellCheck={false}
-            />
-            <span className="send-controls">
-              <label title="Automatically SEND the response above when updated.">
-                <input type="checkbox" id="auto-send" />
-                Auto-SEND
-              </label>
+              <textarea
+                disabled
+                className="App-message"
+                value={messageFromApp}
+                readOnly={true}
+                spellCheck={false}
+              />
               <button
-                className="send-button"
-                onClick={sendResponse}
-                disabled={!isResponseSendable()}
+                className="copy-response"
+                onClick={copyResponseToClipboard}
               >
-                SEND
+                Copy to clipboard
               </button>
-            </span>
+            </div>
+            <div className="to-send">
+              <div className="send-header">
+                <p>
+                  <b>
+                    <i>Editable </i>
+                  </b>
+                  <i>response</i> to send to App:
+                </p>
+                <select
+                  disabled={!messageFromApp}
+                  id="template"
+                  onChange={(e) => {
+                    const selected = e.target.selectedOptions[0].label;
+                    prepopulate(responseGetters[selected]());
+                    // Resetting the selected index allows for the same option to
+                    // be selected repeatedly.
+                    e.target.selectedIndex = 0;
+                  }}
+                >
+                  <option value="">Insert a response...</option>
+                  <option value="status.handshake">status.handshake</option>
+                  <option value="ui.done">ui.done</option>
+                  <option value="ui.launchActivity">ui.launchActivity</option>
+                  <option value="scratchpad.create">scratchpad.create</option>
+                  <option value="scratchpad.update">scratchpad.update</option>
+                  <option value="scratchpad.delete">scratchpad.delete</option>
+                </select>
+              </div>
+              <textarea
+                id="responseText"
+                className="App-message"
+                value={response}
+                onChange={updateResponse}
+                spellCheck={false}
+              />
+              <span className="send-controls">
+                <label title="Automatically SEND the response above when updated.">
+                  <input type="checkbox" id="auto-send" />
+                  Auto-SEND
+                </label>
+                <button
+                  className="send-button"
+                  onClick={sendResponse}
+                  disabled={!isResponseSendable()}
+                >
+                  SEND
+                </button>
+              </span>
+            </div>
           </div>
         </div>
         <div className="Embedded-app">
