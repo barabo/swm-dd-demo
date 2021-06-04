@@ -14,6 +14,15 @@
   color: #c0ff33;
 }
 
+.scratchpad-toggle {
+  padding: 10px;
+  display: flex;
+  overflow: auto;
+}
+.Ehr .scratchpad-toggle p {
+  font-size: 0.7rem;
+}
+
 .config-button {
   display: flex;
   padding: 0.1rem;
@@ -72,6 +81,29 @@
 .Site-content {
   flex: 1;
   height: 100vh;
+}
+
+.scratchpad {
+  background-color: #282c66;
+  display: flex;
+  flex-direction: column;
+  color: lightblue;
+  max-height: 25vh;
+  overflow: auto;
+}
+.scratchpad div.row {
+  display: flex;
+}
+.scratchpad pre {
+  margin: 0.7rem;
+  color: #c0ff33;
+  background: #FFF3;
+  padding: 4px 8px;
+  font-size: calc(0.9rem);
+  border-radius: 4px;
+  width: 100%;
+  position: relative;
+  display: none;
 }
 
 .message-panel {
@@ -144,30 +176,6 @@ textarea {
   color: inherit;
   font-size: calc(10px + 1vmin);
   margin: 0.4rem;
-}
-
-.scratchpad {
-  background-color: #282c66;
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  color: lightblue;
-  max-height: 25vh;
-  overflow: auto;
-}
-.scratchpad div.row {
-  display: flex;
-}
-.scratchpad pre {
-  margin: 5px;
-  color: #c0ff33;
-  background: #FFF3;
-  padding: 4px 8px;
-  font-size: calc(0.9rem);
-  border-radius: 4px;
-  width: 100%;
-  position: relative;
-  display: none;
 }
 
 .Embedded-app {

@@ -285,7 +285,19 @@ function Ehr() {
   return (
     <div className="Ehr">
       <header className="Ehr-header">
-        <br></br>
+        <div className="scratchpad-toggle">
+          <button
+            id="scratchpad-toggle"
+            onClick={() => {
+              const contents = document.getElementById('scratchpad');
+              const seen = contents.style.display !== 'none';
+              contents.style.display = (seen && 'none') || 'block';
+            }}
+          >
+            Scratchpad
+          </button>
+          <p>{scratchpad.size} Entries</p>
+        </div>
         <p>
           Mock EHR &nbsp;
           <a
@@ -350,20 +362,7 @@ function Ehr() {
         </dialog>
         <div className="scratchpad">
           <div className="row">
-            <button
-              id="scratchpad-toggle"
-              onClick={() => {
-                const contents = document.getElementById('scratchpad');
-                const seen = contents.style.display !== 'none';
-                contents.style.display = (seen && 'none') || 'block';
-              }}
-            >
-              Scratchpad
-            </button>
-            <p>{scratchpad.size} Entries</p>
-          </div>
-          <div className="row">
-            <pre id="scratchpad">
+            <pre id="scratchpad" style={{ display: 'none' }}>
               {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
             </pre>
           </div>
