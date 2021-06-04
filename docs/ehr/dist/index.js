@@ -7358,6 +7358,8 @@ function Ehr() {
     onClick: openConfig
   }, "configure")), /* @__PURE__ */ react.createElement("main", {
     className: "Site-content"
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "ehr-main"
   }, /* @__PURE__ */ react.createElement("dialog", {
     className: "activity-panel",
     id: "activity-panel"
@@ -7466,7 +7468,7 @@ function Ehr() {
     className: "send-button",
     onClick: sendResponse2,
     disabled: !isResponseSendable()
-  }, "SEND")))), /* @__PURE__ */ react.createElement("div", {
+  }, "SEND"))))), /* @__PURE__ */ react.createElement("div", {
     className: "Embedded-app"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "ui-buttons"
