@@ -52,8 +52,13 @@ function Ehr() {
   // Automatically insert a response template if the received message matches a
   // known messageType.
   useEffect(() => {
-    const getAutoResponse = responseGetters[message?.messageType];
-    if (getAutoResponse && document.getElementById('auto-reply').checked) {
+    const messageType = message.messageType || '';
+    const autoReply = document.getElementById('auto-reply').checked;
+    const getAutoResponse = responseGetters[messageType];
+
+    if (messageType.startsWith('scratchpad.')) {
+      applyScratchpadMessage(autoReply);
+    } else if (autoReply && getAutoResponse) {
       prepopulate(getAutoResponse());
     }
   }, [message]);
@@ -189,7 +194,7 @@ function Ehr() {
     }
   }
 
-  function applyScratchpadMessage() {
+  function applyScratchpadMessage(autoReply) {
     if (!message || !message.messageType?.startsWith('scratchpad.')) {
       console.error('unable to apply message of unknown type', message);
     }
@@ -222,7 +227,9 @@ function Ehr() {
       default:
         console.error('unknown scratchpad operation', message);
     }
-    prepopulate(reply);
+    if (autoReply) {
+      prepopulate(reply);
+    }
   }
 
   function hideApp() {
@@ -273,15 +280,24 @@ function Ehr() {
     'status.handshake': getHandshakeResponse,
     'ui.done': getUiDoneResponse,
     'ui.launchActivity': getUiLaunchActivityResponse,
-    'scratchpad.create': getScratchpadCreateResponse,
-    'scratchpad.update': getScratchpadUpdateResponse,
-    'scratchpad.delete': getScratchpadDeleteResponse,
   };
 
   return (
     <div className="Ehr">
       <header className="Ehr-header">
-        <br></br>
+        <div className="scratchpad-toggle">
+          <button
+            id="scratchpad-toggle"
+            onClick={() => {
+              const contents = document.getElementById('scratchpad');
+              const seen = contents.style.display !== 'none';
+              contents.style.display = (seen && 'none') || 'block';
+            }}
+          >
+            Scratchpad
+          </button>
+          <p>{scratchpad.size} Entries</p>
+        </div>
         <p>
           Mock EHR &nbsp;
           <a
@@ -344,6 +360,13 @@ function Ehr() {
             </div>
           </div>
         </dialog>
+        <div className="scratchpad">
+          <div className="row">
+            <pre id="scratchpad" style={{ display: 'none' }}>
+              {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
+            </pre>
+          </div>
+        </div>
         <div className="message-panel">
           <div className="from-app">
             <p>
@@ -411,25 +434,6 @@ function Ehr() {
                 SEND
               </button>
             </span>
-          </div>
-        </div>
-        <div className="Ehr-scratchpad">
-          <div className="row">
-            <p>EHR scratchpad</p>
-            <button
-              className="apply-message"
-              onClick={applyScratchpadMessage}
-              disabled={
-                !message || !message.messageType?.startsWith('scratchpad')
-              }
-            >
-              Apply Message
-            </button>
-          </div>
-          <div className="row">
-            <pre id="scratchpad">
-              {JSON.stringify(Object.fromEntries(scratchpad), null, 2)}
-            </pre>
           </div>
         </div>
         <div className="Embedded-app">
