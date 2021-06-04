@@ -7174,8 +7174,12 @@ function Ehr() {
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
   useEffect(() => {
-    const getAutoResponse = responseGetters[message?.messageType];
-    if (getAutoResponse && document.getElementById("auto-reply").checked) {
+    const messageType = message.messageType || "";
+    const autoReply = document.getElementById("auto-reply").checked;
+    const getAutoResponse = responseGetters[messageType];
+    if (messageType.startsWith("scratchpad.")) {
+      applyScratchpadMessage(autoReply);
+    } else if (autoReply && getAutoResponse) {
       prepopulate(getAutoResponse());
     }
   }, [message]);
@@ -7271,7 +7275,7 @@ function Ehr() {
       console.error("failed to send message", e);
     }
   }
-  function applyScratchpadMessage() {
+  function applyScratchpadMessage(autoReply) {
     if (!message || !message.messageType?.startsWith("scratchpad.")) {
       console.error("unable to apply message of unknown type", message);
     }
@@ -7294,7 +7298,9 @@ function Ehr() {
       default:
         console.error("unknown scratchpad operation", message);
     }
-    prepopulate(reply);
+    if (autoReply) {
+      prepopulate(reply);
+    }
   }
   function hideApp() {
     const iframe = document.getElementById("app-iframe");
@@ -7328,16 +7334,22 @@ function Ehr() {
   const responseGetters = {
     "status.handshake": getHandshakeResponse2,
     "ui.done": getUiDoneResponse2,
-    "ui.launchActivity": getUiLaunchActivityResponse2,
-    "scratchpad.create": getScratchpadCreateResponse2,
-    "scratchpad.update": getScratchpadUpdateResponse2,
-    "scratchpad.delete": getScratchpadDeleteResponse2
+    "ui.launchActivity": getUiLaunchActivityResponse2
   };
   return /* @__PURE__ */ react.createElement("div", {
     className: "Ehr"
   }, /* @__PURE__ */ react.createElement("header", {
     className: "Ehr-header"
-  }, /* @__PURE__ */ react.createElement("br", null), /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "scratchpad-toggle"
+  }, /* @__PURE__ */ react.createElement("button", {
+    id: "scratchpad-toggle",
+    onClick: () => {
+      const contents = document.getElementById("scratchpad");
+      const seen = contents.style.display !== "none";
+      contents.style.display = seen && "none" || "block";
+    }
+  }, "Scratchpad"), /* @__PURE__ */ react.createElement("p", null, scratchpad.size, " Entries")), /* @__PURE__ */ react.createElement("p", null, "Mock EHR  ", /* @__PURE__ */ react.createElement("a", {
     target: "_blank",
     rel: "noreferrer noopener",
     href: "https://build.fhir.org/ig/HL7/smart-web-messaging/"
@@ -7392,6 +7404,13 @@ function Ehr() {
     type: "checkbox",
     defaultChecked: true
   }))))), /* @__PURE__ */ react.createElement("div", {
+    className: "scratchpad"
+  }, /* @__PURE__ */ react.createElement("div", {
+    className: "row"
+  }, /* @__PURE__ */ react.createElement("pre", {
+    id: "scratchpad",
+    style: {display: "none"}
+  }, JSON.stringify(Object.fromEntries(scratchpad), null, 2)))), /* @__PURE__ */ react.createElement("div", {
     className: "message-panel"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "from-app"
@@ -7448,18 +7467,6 @@ function Ehr() {
     onClick: sendResponse2,
     disabled: !isResponseSendable()
   }, "SEND")))), /* @__PURE__ */ react.createElement("div", {
-    className: "Ehr-scratchpad"
-  }, /* @__PURE__ */ react.createElement("div", {
-    className: "row"
-  }, /* @__PURE__ */ react.createElement("p", null, "EHR scratchpad"), /* @__PURE__ */ react.createElement("button", {
-    className: "apply-message",
-    onClick: applyScratchpadMessage,
-    disabled: !message || !message.messageType?.startsWith("scratchpad")
-  }, "Apply Message")), /* @__PURE__ */ react.createElement("div", {
-    className: "row"
-  }, /* @__PURE__ */ react.createElement("pre", {
-    id: "scratchpad"
-  }, JSON.stringify(Object.fromEntries(scratchpad), null, 2)))), /* @__PURE__ */ react.createElement("div", {
     className: "Embedded-app"
   }, /* @__PURE__ */ react.createElement("div", {
     className: "ui-buttons"
