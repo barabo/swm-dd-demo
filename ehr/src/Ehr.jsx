@@ -30,22 +30,26 @@ function Ehr() {
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
 
-  // Enable the postMessage API for App messages to the EHR.
+  const client = new swm.Client(sessionHandle, appOrigin);
+
+  // Enable the client to receive and reply to messages from the embedded app.
   const init = useCallback(() => {
-    return swm.enablePostMessage(appOrigin, (m) => {
-      // Only respond to messages with recognized messaging handles.
-      if (sessionHandles.has(m.messagingHandle)) {
-        setResponse(
-          `Awaiting EHR action in response to the received '${m?.messageType}' message...`,
-        );
-        setMessage(m);
-        setMessageFromApp(JSON.stringify(m, null, 2));
-        // TODO: disable all the buttons upon receipt of a valid message??
-        // BONUS: highlight and enable only the button for the expected response type
-      } else if (m.messagingHandle) {
-        console.error(`Unknown messaging handle: ${m.messagingHandle}`);
-      }
+    client.enable({
+      receiveMessage: (message) => {
+        // Only respond to messages with recognized messaging handles.
+        if (sessionHandles.has(message.messagingHandle)) {
+          setResponse(
+            `Awaiting EHR action in response to the received '${message?.messageType}' message...`,
+          );
+          setMessage(message);
+          setMessageFromApp(JSON.stringify(message, null, 2));
+        } else if (message.messagingHandle) {
+          console.error(`Unknown messaging handle: ${message.messagingHandle}`);
+        }
+      },
+      receiveError: console.error,
     });
+    return client.disable;
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
 
@@ -69,6 +73,14 @@ function Ehr() {
       sendResponse();
     }
   }, [response]);
+
+  useEffect(() => {
+    client.targetOrigin = appOrigin;
+  }, [appOrigin]);
+
+  useEffect(() => {
+    client.messagingHandle = sessionHandle;
+  }, [sessionHandle]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
@@ -105,27 +117,29 @@ function Ehr() {
   }
 
   function getHandshakeResponse() {
-    return swm.getHandshakeResponse(message.messageId);
+    return client.createResponse(message);
   }
 
   function getUiDoneResponse() {
-    return swm.getUiDoneResponse(
-      message.messageId,
-      'success',
-      'EHR hid the app iframe',
-    );
+    return client.createResponse(message, {
+      status: 'success',
+      statusDetail: {
+        text: 'EHR hid the app iframe',
+      },
+    });
   }
 
   function getUiLaunchActivityResponse() {
-    const activity = message?.payload?.activityType;
-    if (!activity) {
+    const activityType = message?.payload?.activityType;
+    if (!activityType) {
       console.error('Missing activityType from message', message);
     }
-    return swm.getUiLaunchActivityResponse(
-      message.messageId,
-      'success',
-      `EHR completed activity "${activity}"`,
-    );
+    return client.createResponse(message, {
+      status: 'success',
+      statusDetail: {
+        text: `EHR completed activity "${activityType}"`,
+      },
+    });
   }
 
   function getScratchpadCreateResponse() {
@@ -137,31 +151,25 @@ function Ehr() {
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
     const outcome = undefined; // TODO: populate an OperationOutcome
-    return swm.getScratchpadCreateResponse(
-      message.messageId,
-      '200 OK',
+    return client.createResponse(message, {
+      status: '200 OK',
       location,
       outcome,
-    );
+    });
   }
 
   function getScratchpadDeleteResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
-    return swm.getScratchpadDeleteResponse(message.messageId, status, outcome);
+    return client.createResponse(message, { status, outcome });
   }
 
   function getScratchpadUpdateResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
     const outcome = undefined; // TODO: add an OperationOutcome
-    return swm.getScratchpadUpdateResponse(
-      message.messageId,
-      status,
-      location,
-      outcome,
-    );
+    return client.createResponse(message, { status, location, outcome });
   }
 
   function copyResponseToClipboard() {
@@ -188,7 +196,7 @@ function Ehr() {
       if (!window) {
         console.error('Unknown session handle', sessionHandle);
       }
-      swm.sendResponse(window, r, appOrigin);
+      client.sendResponse(r, window);
     } catch (e) {
       console.error('failed to send message', e);
     }
@@ -211,12 +219,14 @@ function Ehr() {
         break;
       case 'update':
         reply = getScratchpadUpdateResponse();
-        setScratchpad(
-          new Map(scratchpad).set(
-            message.payload.location,
-            message.payload.resource,
-          ),
-        );
+        if (scratchpad.has(message.payload.location)) {
+          setScratchpad(
+            new Map(scratchpad).set(
+              message.payload.location,
+              message.payload.resource,
+            ),
+          );
+        }
         break;
       case 'delete':
         reply = getScratchpadDeleteResponse();

@@ -31,11 +31,17 @@ function App() {
     mockClient.tokenResponse.smart_web_messaging_origin,
   );
 
+  const client = new swm.Client(messageHandle, targetOrigin);
+
   // Enable the postMessage API for EHR responses to the App.
   const init = useCallback(() => {
-    return swm.enablePostMessage(targetOrigin, (r) => {
-      setResponse(JSON.stringify(r, null, 2));
+    client.enable({
+      receiveResponse: (r) => {
+        setResponse(JSON.stringify(r, null, 2));
+      },
+      receiveError: console.error,
     });
+    return client.disable;
   }, [targetOrigin]);
   useEffect(init, [init]);
 
@@ -52,6 +58,14 @@ function App() {
       setResponse('Click SEND to send message to EHR...');
     }
   }, [message]);
+
+  useEffect(() => {
+    client.targetOrigin = targetOrigin;
+  }, [targetOrigin]);
+
+  useEffect(() => {
+    client.messagingHandle = messageHandle;
+  }, [messageHandle]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
@@ -89,30 +103,35 @@ function App() {
   }
 
   function getHandshakeMessage() {
-    return swm.getHandshakeMessage(mockClient);
+    return client.createMessage('status.handshake');
   }
 
   function getUiDoneMessage() {
-    return swm.getUiDoneMessage(mockClient);
+    return client.createMessage('ui.done');
   }
 
   function getUiLaunchActivityMessage() {
-    return swm.getUiLaunchActivityMessage(mockClient, 'problem-review', {
-      problemLocation: 'Condition/123',
+    return client.createMessage('ui.launchActivity', {
+      activityType: 'problem-review',
+      activityParameters: {
+        problemLocation: 'Condition/123',
+      },
     });
   }
 
   function getScratchpadCreateMessage() {
-    return swm.getScratchpadCreateMessage(mockClient, {
-      resourceType: 'ServiceRequest',
-      status: 'draft',
+    return client.createMessage('scratchpad.create', {
+      resource: {
+        resourceType: 'ServiceRequest',
+        status: 'draft',
+      },
     });
   }
 
   function getScratchpadDeleteMessage() {
     // TODO: read the contents of the scratchpad to set the location?
     const location = 'MedicationRequest/456';
-    return swm.getScratchpadDeleteMessage(mockClient, location);
+    return client.createMessage('scratchpad.delete', { location });
   }
 
   function getScratchpadUpdateMessage() {
@@ -123,7 +142,7 @@ function App() {
       status: 'draft',
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    return swm.getScratchpadUpdateMessage(mockClient, resource, location);
+    return client.createMessage('scratchpad.update', { location, resource });
   }
 
   function sendMessage() {
@@ -131,7 +150,7 @@ function App() {
       const m = JSON.parse(message);
       swm.checkIsObject(m);
       setResponse('Failed to send message to EHR!');
-      swm.sendMessage(mockClient, m);
+      client.sendMessage(m);
       setResponse('Awaiting EHR response...');
     } catch (e) {
       setResponse(e.message);
