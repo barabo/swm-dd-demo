@@ -34,17 +34,19 @@ function Ehr() {
 
   // Enable the client to receive and reply to messages from the embedded app.
   const init = useCallback(() => {
-    client.enable((message) => {
-      // Only respond to messages with recognized messaging handles.
-      if (sessionHandles.has(message.messagingHandle)) {
-        setResponse(
-          `Awaiting EHR action in response to the received '${message?.messageType}' message...`,
-        );
-        setMessage(message);
-        setMessageFromApp(JSON.stringify(message, null, 2));
-      } else if (message.messagingHandle) {
-        console.error(`Unknown messaging handle: ${message.messagingHandle}`);
-      }
+    client.enable({
+      receiveMessage: (message) => {
+        // Only respond to messages with recognized messaging handles.
+        if (sessionHandles.has(message.messagingHandle)) {
+          setResponse(
+            `Awaiting EHR action in response to the received '${message?.messageType}' message...`,
+          );
+          setMessage(message);
+          setMessageFromApp(JSON.stringify(message, null, 2));
+        } else if (message.messagingHandle) {
+          console.error(`Unknown messaging handle: ${message.messagingHandle}`);
+        }
+      },
     });
     return client.disable;
   }, [appOrigin, sessionHandle]);
@@ -216,12 +218,14 @@ function Ehr() {
         break;
       case 'update':
         reply = getScratchpadUpdateResponse();
-        setScratchpad(
-          new Map(scratchpad).set(
-            message.payload.location,
-            message.payload.resource,
-          ),
-        );
+        if (scratchpad.has(message.payload.location)) {
+          setScratchpad(
+            new Map(scratchpad).set(
+              message.payload.location,
+              message.payload.resource,
+            ),
+          );
+        }
         break;
       case 'delete':
         reply = getScratchpadDeleteResponse();
