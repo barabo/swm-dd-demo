@@ -47,6 +47,7 @@ function Ehr() {
           console.error(`Unknown messaging handle: ${message.messagingHandle}`);
         }
       },
+      receiveError: console.error,
     });
     return client.disable;
   }, [appOrigin, sessionHandle]);
