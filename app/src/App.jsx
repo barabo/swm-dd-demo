@@ -35,8 +35,11 @@ function App() {
 
   // Enable the postMessage API for EHR responses to the App.
   const init = useCallback(() => {
-    client.enable((r) => {
-      setResponse(JSON.stringify(r, null, 2));
+    client.enable({
+      receiveResponse: (r) => {
+        setResponse(JSON.stringify(r, null, 2));
+      },
+      receiveError: console.error,
     });
     return client.disable;
   }, [targetOrigin]);
