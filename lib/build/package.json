@@ -1,6 +1,6 @@
 {
   "name": "swm-client-lib",
-  "version": "0.2.3",
+  "version": "0.3.1",
   "description": "A SMART Web Messaging Client Library",
   "main": "swm.js",
   "exports": {
