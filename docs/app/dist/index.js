@@ -7388,19 +7388,25 @@ function App() {
     }
   }, /* @__PURE__ */ react.createElement("option", {
     value: ""
-  }, "Insert a message..."), /* @__PURE__ */ react.createElement("option", {
+  }, "Insert a message..."), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "status"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "status.handshake"
-  }, "status.handshake"), /* @__PURE__ */ react.createElement("option", {
+  }, "status.handshake")), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "ui"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "ui.done"
   }, "ui.done"), /* @__PURE__ */ react.createElement("option", {
     value: "ui.launchActivity"
-  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("option", {
+  }, "ui.launchActivity")), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "scratchpad"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.create"
   }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.update"
   }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.delete"
-  }, "scratchpad.delete"))), /* @__PURE__ */ react.createElement("textarea", {
+  }, "scratchpad.delete")))), /* @__PURE__ */ react.createElement("textarea", {
     className: "App-message",
     value: message,
     onChange: updateMessage,
