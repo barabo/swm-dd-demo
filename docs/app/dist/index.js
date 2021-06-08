@@ -7201,8 +7201,10 @@ function createResponse(responseToMessageId, payload) {
 }
 
 // build/app/dist/App.js
-var defaultOrigin = "https://barabo.github.io";
-var defaultHandle = "RXhhbXBsZSBoYW5kbGUK";
+var demoHandle = "RXhhbXBsZSBoYW5kbGUK";
+var demoEhrOrigin = "https://barabo.github.io";
+var defaultOrigin = localStorage.getItem("app/ehrOrigin") || demoEhrOrigin;
+var defaultHandle = localStorage.getItem("app/messageHandle") || demoHandle;
 var mockClient = {
   tokenResponse: {
     access_token: "VGhpcyBpcyBhbiBleGFtcGxlIGFjY2Vzc190b2tlbiEK",
@@ -7265,6 +7267,8 @@ function App() {
     }
     mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
     mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
+    localStorage.setItem("app/ehrOrigin", targetOrigin);
+    localStorage.setItem("app/messageHandle", messageHandle);
   }
   function updateMessage(e) {
     setMessage(e.target.value);
