@@ -243,17 +243,17 @@ function App() {
               >
                 <option value="">Insert a message...</option>
                 <optgroup label="status">
-                    <option value="status.handshake">status.handshake</option>
-                  </optgroup>
-                  <optgroup label="ui">
-                    <option value="ui.done">ui.done</option>
-                    <option value="ui.launchActivity">ui.launchActivity</option>
-                  </optgroup>
-                  <optgroup label="scratchpad">
-                    <option value="scratchpad.create">scratchpad.create</option>
-                    <option value="scratchpad.update">scratchpad.update</option>
-                    <option value="scratchpad.delete">scratchpad.delete</option>
-                  </optgroup>
+                  <option value="status.handshake">status.handshake</option>
+                </optgroup>
+                <optgroup label="ui">
+                  <option value="ui.done">ui.done</option>
+                  <option value="ui.launchActivity">ui.launchActivity</option>
+                </optgroup>
+                <optgroup label="scratchpad">
+                  <option value="scratchpad.create">scratchpad.create</option>
+                  <option value="scratchpad.update">scratchpad.update</option>
+                  <option value="scratchpad.delete">scratchpad.delete</option>
+                </optgroup>
               </select>
             </div>
             <textarea
