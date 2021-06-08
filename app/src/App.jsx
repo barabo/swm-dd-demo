@@ -130,6 +130,10 @@ function App() {
     });
   }
 
+  function getScratchpadReadMessage() {
+    return client.createMessage('scratchpad.read');
+  }
+
   function getScratchpadDeleteMessage() {
     // TODO: read the contents of the scratchpad to set the location?
     const location = 'MedicationRequest/456';
@@ -177,6 +181,7 @@ function App() {
     'ui.done': getUiDoneMessage,
     'ui.launchActivity': getUiLaunchActivityMessage,
     'scratchpad.create': getScratchpadCreateMessage,
+    'scratchpad.read': getScratchpadReadMessage,
     'scratchpad.update': getScratchpadUpdateMessage,
     'scratchpad.delete': getScratchpadDeleteMessage,
   };
@@ -254,6 +259,7 @@ function App() {
                 </optgroup>
                 <optgroup label="scratchpad">
                   <option value="scratchpad.create">scratchpad.create</option>
+                  <option value="scratchpad.read">scratchpad.read</option>
                   <option value="scratchpad.update">scratchpad.update</option>
                   <option value="scratchpad.delete">scratchpad.delete</option>
                 </optgroup>
