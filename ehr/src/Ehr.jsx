@@ -167,26 +167,35 @@ function Ehr() {
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
-    const outcome = undefined; // TODO: populate an OperationOutcome
     return client.createResponse(message, {
       status: '200 OK',
       location,
-      outcome,
+    });
+  }
+
+  function getScratchpadReadResponse() {
+    const location = message?.payload?.location;
+    const status =
+      !location || (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
+    const selected = [...scratchpad.entries()].filter(
+      (e) => !location || e[0] === location,
+    );
+    return client.createResponse(message, {
+      status,
+      scratchpad: Object.fromEntries(selected),
     });
   }
 
   function getScratchpadDeleteResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    const outcome = undefined; // TODO: add an OperationOutcome
-    return client.createResponse(message, { status, outcome });
+    return client.createResponse(message, { status });
   }
 
   function getScratchpadUpdateResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    const outcome = undefined; // TODO: add an OperationOutcome
-    return client.createResponse(message, { status, location, outcome });
+    return client.createResponse(message, { status, location });
   }
 
   function copyResponseToClipboard() {
@@ -233,6 +242,9 @@ function Ehr() {
             message.payload.resource,
           ),
         );
+        break;
+      case 'read':
+        reply = getScratchpadReadResponse();
         break;
       case 'update':
         reply = getScratchpadUpdateResponse();
@@ -470,6 +482,7 @@ function Ehr() {
                   </optgroup>
                   <optgroup label="scratchpad">
                     <option value="scratchpad.create">scratchpad.create</option>
+                    <option value="scratchpad.read">scratchpad.read</option>
                     <option value="scratchpad.update">scratchpad.update</option>
                     <option value="scratchpad.delete">scratchpad.delete</option>
                   </optgroup>
