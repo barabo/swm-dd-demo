@@ -26,6 +26,12 @@ if [[ $HIGHEST == $LATEST ]]; then
   exit 1
 fi
 
+SWM="$( grep -e '^[ ]*version:' swm.js | cut -d"'" -f2 )"
+if [[ $NEXT != $SWM ]]; then
+  echo "FAIL: version in swm.js does not match package.json!"
+  exit 1
+fi
+
 echo "OK to publish new version: $NEXT"
 if [[ $( basename $PWD ) == 'lib' ]]; then
   echo "Running 'npm publish' from the build directory!"
