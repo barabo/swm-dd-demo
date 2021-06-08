@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
-//import * as swm from './swm'; // XXX: local dev
-import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
+import * as swm from 'swm-client-lib'; // npm -i swm-client-lib
 
 //const defaultOrigin = 'https://barabo.github.io';
 const defaultOrigin = 'http://localhost:8000';
