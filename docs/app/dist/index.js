@@ -7298,6 +7298,9 @@ function App() {
       }
     });
   }
+  function getScratchpadReadMessage() {
+    return client.createMessage("scratchpad.read");
+  }
   function getScratchpadDeleteMessage() {
     const location = "MedicationRequest/456";
     return client.createMessage("scratchpad.delete", {location});
@@ -7335,6 +7338,7 @@ function App() {
     "ui.done": getUiDoneMessage,
     "ui.launchActivity": getUiLaunchActivityMessage,
     "scratchpad.create": getScratchpadCreateMessage,
+    "scratchpad.read": getScratchpadReadMessage,
     "scratchpad.update": getScratchpadUpdateMessage,
     "scratchpad.delete": getScratchpadDeleteMessage
   };
@@ -7407,6 +7411,8 @@ function App() {
   }, /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.create"
   }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.read"
+  }, "scratchpad.read"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.update"
   }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.delete"
