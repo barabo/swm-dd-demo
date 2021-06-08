@@ -7014,7 +7014,7 @@ var reactDom = createCommonjsModule(function(module) {
 });
 var react_dom_default = reactDom;
 
-// build/ehr/dist/meta/pkg/uuid.js
+// build/_snowpack/pkg/swm-client-lib.js
 var getRandomValues;
 var rnds8 = new Uint8Array(16);
 function rng() {
@@ -7056,8 +7056,6 @@ function v4(options, buf, offset) {
   }
   return stringify(rnds);
 }
-
-// build/ehr/dist/swm.js
 var Client = class {
   constructor(swmHandle, swmOrigin, receivers = {}) {
     checkTargetOrigin(swmOrigin);
