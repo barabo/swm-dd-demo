@@ -6,7 +6,8 @@ const demoHandle = 'RXhhbXBsZSBoYW5kbGUK';
 const demoAppUrl = 'https://barabo.github.io/swm-dd-demo/app/';
 const defaultAppUrl = localStorage.getItem('ehr/appUrl') || demoAppUrl;
 const defaultAppOrigin = new URL(defaultAppUrl).origin;
-const defaultSessionHandle = localStorage.getItem('ehr/sessionHandle') || demoHandle;
+const defaultSessionHandle =
+  localStorage.getItem('ehr/sessionHandle') || demoHandle;
 const defaultCountdown = 5;
 
 /**
