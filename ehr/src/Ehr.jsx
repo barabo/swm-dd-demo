@@ -314,6 +314,22 @@ function Ehr() {
     }
   }
 
+  function selectedResponse(e) {
+    const responseGetters = {
+      'status.handshake': getHandshakeResponse,
+      'ui.done': getUiDoneResponse,
+      'ui.launchActivity': getUiLaunchActivityResponse,
+      'scratchpad.create': getScratchpadCreateResponse,
+      'scratchpad.update': getScratchpadUpdateResponse,
+      'scratchpad.delete': getScratchpadDeleteResponse,
+    };
+    const selected = e.target.selectedOptions[0].label;
+    prepopulate(responseGetters[selected]());
+    // Resetting the selected index allows for the same option to
+    // be selected repeatedly.
+    e.target.selectedIndex = 0;
+  }
+
   return (
     <div className="Ehr">
       <header className="Ehr-header">
@@ -438,21 +454,21 @@ function Ehr() {
                 <select
                   disabled={!messageFromApp}
                   id="template"
-                  onChange={(e) => {
-                    const selected = e.target.selectedOptions[0].label;
-                    prepopulate(responseGetters[selected]());
-                    // Resetting the selected index allows for the same option to
-                    // be selected repeatedly.
-                    e.target.selectedIndex = 0;
-                  }}
+                  onChange={selectedResponse}
                 >
                   <option value="">Insert a response...</option>
-                  <option value="status.handshake">status.handshake</option>
-                  <option value="ui.done">ui.done</option>
-                  <option value="ui.launchActivity">ui.launchActivity</option>
-                  <option value="scratchpad.create">scratchpad.create</option>
-                  <option value="scratchpad.update">scratchpad.update</option>
-                  <option value="scratchpad.delete">scratchpad.delete</option>
+                  <optgroup label="status">
+                    <option value="status.handshake">status.handshake</option>
+                  </optgroup>
+                  <optgroup label="ui">
+                    <option value="ui.done">ui.done</option>
+                    <option value="ui.launchActivity">ui.launchActivity</option>
+                  </optgroup>
+                  <optgroup label="scratchpad">
+                    <option value="scratchpad.create">scratchpad.create</option>
+                    <option value="scratchpad.update">scratchpad.update</option>
+                    <option value="scratchpad.delete">scratchpad.delete</option>
+                  </optgroup>
                 </select>
               </div>
               <textarea
