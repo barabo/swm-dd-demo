@@ -186,22 +186,39 @@ textarea {
   flex-direction: column;
   overflow: auto;
 }
-.Embedded-app .ui-buttons {
-  display: flex;
-  margin: 3vh;
-  margin-bottom: 1vh;
+.Embedded-app .app-closing {
+  top: auto;
+  width: inherit;
+  margin: 4rem;
+  margin-bottom: 6rem;
+  height: 35vh;
+  background: #bfbfbfcc;
 }
-.Embedded-app button {
-  margin: 0.2vh;
-  font-size: calc(4px + 0.5rem);
-  background-color: #c4ffe19e;
+.Embedded-app .closing-controls {
+  display: flex;
+  justify-content: space-between;
+  align-content: center;
+  padding: 5rem;
+}
+.Embedded-app .closing-timer {
+  display: flex;
+}
+.Embedded-app .closing-timer button {
+  margin-right: 2rem;
 }
 .Embedded-app iframe {
-  margin: 3vh;
+  width: inherit;
+  margin: 4rem;
   margin-top: 0;
   height: 35vh;
 }
-
+.Embedded-app .reload-app {
+  position: absolute;
+  right: 4.5rem;
+  bottom: 7rem;
+  height: 3.5rem;
+  display: none;
+}
 .Ehr-footer {
   background: #01a77e;
   display: flex;

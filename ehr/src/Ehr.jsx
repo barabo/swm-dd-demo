@@ -7,6 +7,7 @@ import * as swm from './swm'; // XXX local dev only TEMPORARY
 const defaultAppUrl = 'http://localhost:8001/app/';
 const defaultAppOrigin = new URL(defaultAppUrl).origin;
 const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
+const defaultCountdown = 5;
 
 /**
  * Maps ResourceTypes to the last known int ID used for that type.  This helps
@@ -29,6 +30,7 @@ function Ehr() {
   const [sessionHandle, setSessionHandle] = useState(defaultSessionHandle);
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
+  const [countdown, setCountdown] = useState(defaultCountdown);
 
   const client = new swm.Client(sessionHandle, appOrigin);
 
@@ -58,12 +60,15 @@ function Ehr() {
   useEffect(() => {
     const messageType = message.messageType || '';
     const autoReply = document.getElementById('auto-reply').checked;
-    const getAutoResponse = responseGetters[messageType];
 
-    if (messageType.startsWith('scratchpad.')) {
+    if (messageType === 'ui.done') {
+      showCountdown();
+    } else if (messageType === 'ui.launchActivity') {
+      launchActivity();
+    } else if (messageType.startsWith('scratchpad.')) {
       applyScratchpadMessage(autoReply);
-    } else if (autoReply && getAutoResponse) {
-      prepopulate(getAutoResponse());
+    } else if (messageType === 'status.handshake' && autoReply) {
+      prepopulate(getHandshakeResponse());
     }
   }, [message]);
 
@@ -73,6 +78,14 @@ function Ehr() {
       sendResponse();
     }
   }, [response]);
+
+  // Close the app if the 'app-closing' element is visible and the countdown
+  // is done.
+  useEffect(() => {
+    if (countdown <= 0 && document.getElementById('app-closing').open) {
+      closeApp();
+    }
+  }, [countdown]);
 
   useEffect(() => {
     client.targetOrigin = appOrigin;
@@ -120,24 +133,25 @@ function Ehr() {
     return client.createResponse(message);
   }
 
-  function getUiDoneResponse() {
+  function getUiDoneResponse(success) {
     return client.createResponse(message, {
-      status: 'success',
+      status: (success && 'success') || 'failure',
       statusDetail: {
-        text: 'EHR hid the app iframe',
+        text: `EHR ${(success && 'hid') || 'did not hide'} the app iframe`,
       },
     });
   }
 
-  function getUiLaunchActivityResponse() {
+  function getUiLaunchActivityResponse(success) {
     const activityType = message?.payload?.activityType;
     if (!activityType) {
       console.error('Missing activityType from message', message);
     }
+    const status = (success && 'success') || 'failure';
     return client.createResponse(message, {
-      status: 'success',
+      status,
       statusDetail: {
-        text: `EHR completed activity "${activityType}"`,
+        text: `EHR completed activity "${activityType}" with status: ${status}`,
       },
     });
   }
@@ -242,40 +256,36 @@ function Ehr() {
     }
   }
 
-  function hideApp() {
-    const iframe = document.getElementById('app-iframe');
-    iframe.style.display = 'none';
-    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
-  }
-
-  function showApp() {
-    const iframe = document.getElementById('app-iframe');
-    iframe.style.display = '';
-    // TODO: enablePostMessage?
-  }
-
   function closeApp() {
-    const iframe = document.getElementById('app-iframe');
-    iframe.src = '';
-    // TODO: any side effects WRT the messagingHandle?  disablePostMessage?
+    document.getElementById('app-iframe').src = '';
+    document.getElementById('app-closing').close();
+    if (document.getElementById('auto-reply').checked) {
+      prepopulate(getUiDoneResponse(true));
+    }
+    document.getElementById('reload-app').style.display = 'block';
   }
 
   function reloadApp() {
-    const iframe = document.getElementById('app-iframe');
-    iframe.src = appUrl;
-    // TODO: side effects?  clear scratchpad?  new messagingHandle?
+    document.getElementById('app-iframe').src = appUrl;
+    document.getElementById('reload-app').style.display = 'none';
   }
 
   function launchActivity() {
-    const popup = document.getElementById('activity-panel');
     setActivity(message.payload);
-    popup.showModal();
+    document.getElementById('activity-panel').showModal();
   }
 
   function closeActivity() {
-    const popup = document.getElementById('activity-panel');
-    popup.close();
-    prepopulate(getUiLaunchActivityResponse());
+    document.getElementById('activity-panel').close();
+    if (document.getElementById('auto-reply').checked) {
+      prepopulate(getUiLaunchActivityResponse(true));
+    }
+  }
+
+  function cancelActivity() {
+    if (document.getElementById('auto-reply').checked) {
+      prepopulate(getUiLaunchActivityResponse(false));
+    }
   }
 
   function saveSessionHandle() {
@@ -286,11 +296,24 @@ function Ehr() {
     );
   }
 
-  const responseGetters = {
-    'status.handshake': getHandshakeResponse,
-    'ui.done': getUiDoneResponse,
-    'ui.launchActivity': getUiLaunchActivityResponse,
-  };
+  function showCountdown() {
+    document.getElementById('app-closing').showModal();
+    setCountdown(defaultCountdown);
+    var c = defaultCountdown;
+    const i = setInterval(() => {
+      setCountdown(--c);
+    }, 1000);
+    setTimeout(() => {
+      clearInterval(i);
+    }, defaultCountdown * 1000);
+  }
+
+  function cancelClose() {
+    document.getElementById('app-closing').close();
+    if (document.getElementById('auto-reply').checked) {
+      prepopulate(getUiDoneResponse(false));
+    }
+  }
 
   return (
     <div className="Ehr">
@@ -325,7 +348,12 @@ function Ehr() {
       </header>
       <main className="Site-content">
         <div className="ehr-main">
-          <dialog className="activity-panel" id="activity-panel">
+          <dialog
+            className="activity-panel"
+            id="activity-panel"
+            onCancel={cancelActivity}
+          >
+            <h1>Activity Launched from App</h1>
             <pre>{JSON.stringify(activity, null, 2)}</pre>
             <button onClick={closeActivity}>Close</button>
           </dialog>
@@ -452,25 +480,28 @@ function Ehr() {
           </div>
         </div>
         <div className="Embedded-app">
-          <div className="ui-buttons">
-            <p>EHR UI Controls</p>
-            <button onClick={hideApp}>Hide App</button>
-            <button onClick={showApp}>Show App</button>
-            <button onClick={closeApp}>Close App</button>
-            <button onClick={reloadApp}>Reload App</button>
-            <button
-              onClick={launchActivity}
-              disabled={message?.messageType !== 'ui.launchActivity'}
-            >
-              Launch Activity
-            </button>
-          </div>
+          <dialog
+            onCancel={cancelClose}
+            className="app-closing"
+            id="app-closing"
+          >
+            <div className="closing-controls">
+              <div className="closing-timer">
+                <button onClick={cancelClose}>Cancel</button>
+                <h1>Closing App in {countdown} seconds...</h1>
+              </div>
+              <button onClick={closeApp}>Close Now</button>
+            </div>
+          </dialog>
           <iframe
             id="app-iframe"
             src={appUrl}
             allow="clipboard-write"
             onLoad={saveSessionHandle}
           ></iframe>
+          <button id="reload-app" className="reload-app" onClick={reloadApp}>
+            Reload
+          </button>
         </div>
       </main>
       <footer className="Ehr-footer">
