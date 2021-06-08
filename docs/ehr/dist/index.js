@@ -7324,24 +7324,29 @@ function Ehr() {
     const id2 = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id2);
     const location = `${resourceType}/${id2}`;
-    const outcome = void 0;
     return client.createResponse(message, {
       status: "200 OK",
-      location,
-      outcome
+      location
+    });
+  }
+  function getScratchpadReadResponse() {
+    const location = message?.payload?.location;
+    const status = !location || scratchpad.has(location) && "200 OK" || "404 NOT FOUND";
+    const selected = [...scratchpad.entries()].filter((e) => !location || e[0] === location);
+    return client.createResponse(message, {
+      status,
+      scratchpad: Object.fromEntries(selected)
     });
   }
   function getScratchpadDeleteResponse() {
     const location = message?.payload?.location ?? "Encounter/123";
     const status = scratchpad.has(location) && "200 OK" || "404 NOT FOUND";
-    const outcome = void 0;
-    return client.createResponse(message, {status, outcome});
+    return client.createResponse(message, {status});
   }
   function getScratchpadUpdateResponse() {
     const location = message?.payload?.location ?? "Encounter/123";
     const status = scratchpad.has(location) && "200 OK" || "404 NOT FOUND";
-    const outcome = void 0;
-    return client.createResponse(message, {status, location, outcome});
+    return client.createResponse(message, {status, location});
   }
   function copyResponseToClipboard() {
     navigator.clipboard.writeText(messageFromApp);
@@ -7378,6 +7383,9 @@ function Ehr() {
       case "create":
         reply = getScratchpadCreateResponse();
         setScratchpad(new Map(scratchpad).set(reply.payload.location, message.payload.resource));
+        break;
+      case "read":
+        reply = getScratchpadReadResponse();
         break;
       case "update":
         reply = getScratchpadUpdateResponse();
@@ -7573,6 +7581,8 @@ function Ehr() {
   }, /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.create"
   }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
+    value: "scratchpad.read"
+  }, "scratchpad.read"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.update"
   }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.delete"
