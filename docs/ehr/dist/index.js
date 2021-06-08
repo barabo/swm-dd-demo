@@ -7201,9 +7201,11 @@ function createResponse(responseToMessageId, payload) {
 }
 
 // build/ehr/dist/Ehr.js
-var defaultAppUrl = "https://barabo.github.io/swm-dd-demo/app/";
+var demoHandle = "RXhhbXBsZSBoYW5kbGUK";
+var demoAppUrl = "https://barabo.github.io/swm-dd-demo/app/";
+var defaultAppUrl = localStorage.getItem("ehr/appUrl") || demoAppUrl;
 var defaultAppOrigin = new URL(defaultAppUrl).origin;
-var defaultSessionHandle = "RXhhbXBsZSBoYW5kbGUK";
+var defaultSessionHandle = localStorage.getItem("ehr/sessionHandle") || demoHandle;
 var defaultCountdown = 5;
 var resourceIds = new Map();
 var sessionHandles = new Map();
@@ -7280,6 +7282,8 @@ function Ehr() {
     }
   }
   function closeConfig() {
+    localStorage.setItem("ehr/appUrl", appUrl);
+    localStorage.setItem("ehr/sessionHandle", sessionHandle);
     document.getElementById("config-panel").close();
   }
   function updateResponse(e) {
