@@ -2,10 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import './Ehr.css';
 import * as swm from 'swm-client-lib'; // npm i -s swm-client-lib
 
-//const defaultAppUrl = 'https://barabo.github.io/swm-dd-demo/app/';
-const defaultAppUrl = 'http://localhost:8001/app/';
+const demoHandle = 'RXhhbXBsZSBoYW5kbGUK';
+const demoAppUrl = 'https://barabo.github.io/swm-dd-demo/app/';
+const defaultAppUrl = localStorage.getItem('ehr/appUrl') || demoAppUrl;
 const defaultAppOrigin = new URL(defaultAppUrl).origin;
-const defaultSessionHandle = 'RXhhbXBsZSBoYW5kbGUK';
+const defaultSessionHandle = localStorage.getItem('ehr/sessionHandle') || demoHandle;
 const defaultCountdown = 5;
 
 /**
@@ -115,6 +116,8 @@ function Ehr() {
   }
 
   function closeConfig() {
+    localStorage.setItem('ehr/appUrl', appUrl);
+    localStorage.setItem('ehr/sessionHandle', sessionHandle);
     document.getElementById('config-panel').close();
   }
 

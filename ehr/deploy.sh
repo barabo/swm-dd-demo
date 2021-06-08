@@ -13,9 +13,6 @@ trap 'echo -e "\nFAILED TO DEPLOY\n\\O/\n Y\n/ \\"' ERR
 echo "Checking lint..."
 npm run lint
 
-echo "Ensuring that configuration is not set to localhost...";
-grep '^const defaultAppUrl = ' src/Ehr.jsx | grep -v localhost
-
 echo "Copying built page into /docs..."
 cp -av build/ehr ../docs
 

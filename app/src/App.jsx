@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import * as swm from 'swm-client-lib'; // npm -i swm-client-lib
 
-//const defaultOrigin = 'https://barabo.github.io';
-const defaultOrigin = 'http://localhost:8000';
-const defaultHandle = 'RXhhbXBsZSBoYW5kbGUK';
+const demoHandle = 'RXhhbXBsZSBoYW5kbGUK';
+const demoEhrOrigin = 'https://barabo.github.io';
+const defaultOrigin = localStorage.getItem('app/ehrOrigin') || demoEhrOrigin;
+const defaultHandle = localStorage.getItem('app/messageHandle') || demoHandle;
 
 // TODO: set up a launch url and launch as a real app would.
 // TODO: move this mock client into the swm lib as an example.
@@ -89,6 +90,8 @@ function App() {
     }
     mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
     mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
+    localStorage.setItem('app/ehrOrigin', targetOrigin);
+    localStorage.setItem('app/messageHandle', messageHandle);
   }
 
   function updateMessage(e) {
