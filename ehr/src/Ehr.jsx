@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import './Ehr.css';
-import * as swm from './swm'; // XXX local dev only TEMPORARY
-//import * as swm from 'swm-client-lib';  // npm i -s swm-client-lib
+import * as swm from 'swm-client-lib'; // npm i -s swm-client-lib
 
 //const defaultAppUrl = 'https://barabo.github.io/swm-dd-demo/app/';
 const defaultAppUrl = 'http://localhost:8001/app/';
