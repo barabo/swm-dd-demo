@@ -7441,6 +7441,19 @@ function Ehr() {
       prepopulate(getUiDoneResponse(false));
     }
   }
+  function selectedResponse(e) {
+    const responseGetters = {
+      "status.handshake": getHandshakeResponse,
+      "ui.done": getUiDoneResponse,
+      "ui.launchActivity": getUiLaunchActivityResponse,
+      "scratchpad.create": getScratchpadCreateResponse,
+      "scratchpad.update": getScratchpadUpdateResponse,
+      "scratchpad.delete": getScratchpadDeleteResponse
+    };
+    const selected = e.target.selectedOptions[0].label;
+    prepopulate(responseGetters[selected]());
+    e.target.selectedIndex = 0;
+  }
   return /* @__PURE__ */ react.createElement("div", {
     className: "Ehr"
   }, /* @__PURE__ */ react.createElement("header", {
@@ -7538,26 +7551,28 @@ function Ehr() {
   }, /* @__PURE__ */ react.createElement("p", null, /* @__PURE__ */ react.createElement("b", null, /* @__PURE__ */ react.createElement("i", null, "Editable ")), /* @__PURE__ */ react.createElement("i", null, "response"), " to send to App:"), /* @__PURE__ */ react.createElement("select", {
     disabled: !messageFromApp,
     id: "template",
-    onChange: (e) => {
-      const selected = e.target.selectedOptions[0].label;
-      prepopulate(responseGetters[selected]());
-      e.target.selectedIndex = 0;
-    }
+    onChange: selectedResponse
   }, /* @__PURE__ */ react.createElement("option", {
     value: ""
-  }, "Insert a response..."), /* @__PURE__ */ react.createElement("option", {
+  }, "Insert a response..."), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "status"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "status.handshake"
-  }, "status.handshake"), /* @__PURE__ */ react.createElement("option", {
+  }, "status.handshake")), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "ui"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "ui.done"
   }, "ui.done"), /* @__PURE__ */ react.createElement("option", {
     value: "ui.launchActivity"
-  }, "ui.launchActivity"), /* @__PURE__ */ react.createElement("option", {
+  }, "ui.launchActivity")), /* @__PURE__ */ react.createElement("optgroup", {
+    label: "scratchpad"
+  }, /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.create"
   }, "scratchpad.create"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.update"
   }, "scratchpad.update"), /* @__PURE__ */ react.createElement("option", {
     value: "scratchpad.delete"
-  }, "scratchpad.delete"))), /* @__PURE__ */ react.createElement("textarea", {
+  }, "scratchpad.delete")))), /* @__PURE__ */ react.createElement("textarea", {
     id: "responseText",
     className: "App-message",
     value: response,
