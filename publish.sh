@@ -19,5 +19,5 @@ function publish() {
   fi
   git stash save
   git checkout -
-  git stash pop
+  git stash pop || true
 }
