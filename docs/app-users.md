@@ -63,7 +63,7 @@ correct target origin parameter, as well, and the value used in the app configur
 
 ![image](https://user-images.githubusercontent.com/4342684/121305712-8a55f880-c8c3-11eb-8db1-2f69a84ae726.png)
 
-Within your EHR, you will need to create an `iframe` element to embed the app - or launch the app in a new tab.  This demo assumes an embedded application, but either should work with the provided library.
+Once the demo app is embedded in your EHR, the app heading will change to read 'EMBEDDED APP'.
 
 ![image](https://user-images.githubusercontent.com/4342684/121306129-19631080-c8c4-11eb-99ab-220cb4d32201.png)
 
