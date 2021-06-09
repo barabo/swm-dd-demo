@@ -2,13 +2,17 @@
 
 A simple, EHR-embeddable app that can be used to test an EHR's implementation of SMART Web Messaging capabilities.
 
+![image](https://user-images.githubusercontent.com/4342684/121302968-182fe480-c8c0-11eb-927f-f4b96bd25508.png)
+
+[CLICK HERE](https://barabo.github.io/swm-dd-demo/app/) to launch it, or visit: [https://barabo.github.io/swm-dd-demo/app/](https://barabo.github.io/swm-dd-demo/app/)
+
 ## User Instructions
 
 ### Profile Audience
 
 This app was developed primarily for *EHR* developers wishing to test their implementation of SMART Web Messaging against a simple demo app.
 
-Embed this app into your EHR to initiate web messages to the EHR, and view the returned responses.
+Embed this app into your EHR and use it to initiate web messages, quickly viewing the returned responses.
 
 ## Preparing Your EHR
 
@@ -28,67 +32,39 @@ This library is currently an ES6 module *only*.  Import the module as shown in t
 import * as swm from 'swm-client-lib';
 ```
 
+### Client Configuration and Setup
+
+Refer to the [client library documentation](https://github.com/barabo/swm-dd-demo/tree/main/lib#smart-web-messaging-client-library) for full instructions, including some of the concepts behind using the library to enable SMART Web Messaging in your EHR.
+
+Link: [https://github.com/barabo/swm-dd-demo/tree/main/lib](https://github.com/barabo/swm-dd-demo/tree/main/lib#smart-web-messaging-client-library)
+
 ### Session `messagingHandle` Management
 
 Within your EHR, you will need to create an `iframe` element to embed the app - or launch the app in a new tab.  This demo assumes an embedded application, but either should work with the provided library.
 
 The provided demo EHR was designed to map a session `messagingHandle` to the `iframe` `contentWindow` object itself, which is recorded automatically when the `iframe` finishes loading.  Your EHR may have different capabilities and requirements, but whatever strategy you employ, the `smart_web_messaging_handle` launch context parameter *must* be provided in the SMART Launch client object, and it *must be* provided to the EHR (and validated against the session) *in all messages* in order to be within IG specifications.
 
-Here's an example from the mock EHR React app that may be informative:
-
-```js
-import React, { useState } from 'react';
-import './Ehr.css';
-import * as swm from 'swm-client-lib';
-
-// Each loaded iframe maps a session handle to a window object.
-// This is just *one* way to do this - your implementation details may vary.
-const sessionHandles = new Map();
-...
-function Ehr() {
-...
-  const [appOrigin, setAppOrigin] = useState('http://localhost:8001');
-  const [sessionHandle, setSessionHandle] = useState('RXhhbXBsZSBoYW5kbGUK');
-
-  // Enable the postMessage API for receiving App messages in the EHR.
-  swm.enablePostMessage(appOrigin, (m) => {
-    // Handle the message received from the app.
-...
-  });
-
-  // Note: this was slightly modified from the actual code for simplicity.
-  function sendResponse(response) {
-    try {
-      swm.checkMessageType(response);  // sanity check response before sending it
-      const window = sessionHandles.get(message.messagingHandle);
-      if (!window) {
-        console.error('Unknown session handle', sessionHandle);
-      }
-      swm.sendResponse(window, response, appOrigin);
-    } catch (e) {
-      console.error('failed to send message', e);
-    }
-  }
-
-  return (
-...
-    <div className="Embedded-app">
-      <iframe
-        id="app-iframe"
-        src={appOrigin}
-        allow="clipboard-write"
-        onLoad={() => {
-          sessionHandles.set(
-            sessionHandle, 
-            document.getElementById('app-iframe').contentWindow
-          )
-        }}
-      ></iframe>
-    </div>
-...
-  );
-```
-
 ## User Interface
 
-![image](https://user-images.githubusercontent.com/4342684/118530733-98708900-b70a-11eb-920c-60b8609a1592.png)
+![image](https://user-images.githubusercontent.com/4342684/121302929-09493200-c8c0-11eb-8508-207c3b9e69da.png)
+
+Like the [Mock EHR](https://barabo.github.io/swm-dd-demo/ehr-users.html#user-interface), the demo app provides two message panels.  The left panel is *editable* and contains a message that can be sent to the EHR.  The panel on the right contains the read-only response from the EHR.
+
+### App Configuration
+
+![image](https://user-images.githubusercontent.com/4342684/121304936-9ab9a380-c8c2-11eb-9866-dbeb0cca7cdd.png)
+
+Messages sent from the app to your EHR must specify the target origin of your EHR in order for the browser to deliver them.  The client library requires a
+correct target origin parameter, as well, and the value used in the app configuration panel must be set.
+
+**Also, the messaging handle shown in the configuration panel should match what the EHR expects from the app session messages.**
+
+### Sending Messages
+
+![image](https://user-images.githubusercontent.com/4342684/121305712-8a55f880-c8c3-11eb-8db1-2f69a84ae726.png)
+
+Within your EHR, you will need to create an `iframe` element to embed the app - or launch the app in a new tab.  This demo assumes an embedded application, but either should work with the provided library.
+
+![image](https://user-images.githubusercontent.com/4342684/121306129-19631080-c8c4-11eb-99ab-220cb4d32201.png)
+
+Select any of the available template messages and edit them according to your needs before sending.
