@@ -7233,7 +7233,6 @@ function Ehr() {
       },
       receiveError: console.error
     });
-    return client.disable;
   }, [appOrigin, sessionHandle]);
   useEffect(init, [init]);
   useEffect(() => {
