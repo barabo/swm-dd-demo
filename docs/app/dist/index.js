@@ -7169,12 +7169,16 @@ var Client = class {
   }
 };
 function checkTargetOrigin(targetOrigin) {
-  if (targetOrigin !== new URL(targetOrigin).origin) {
-    console.warn("targetOrigin is not normalized", targetOrigin);
-  }
-  const ancestors = document.defaultView.location.ancestorOrigins;
-  if (ancestors.length && !ancestors.contains(targetOrigin)) {
-    console.warn(`targetOrigin ${targetOrigin}, is not an ancestor origin`, ancestors);
+  try {
+    if (targetOrigin !== new URL(targetOrigin).origin) {
+      console.warn("targetOrigin is not normalized", targetOrigin);
+    }
+    const ancestors = document.defaultView.location.ancestorOrigins;
+    if (ancestors.length && !ancestors.contains(targetOrigin)) {
+      console.warn(`targetOrigin ${targetOrigin}, is not an ancestor origin`, ancestors);
+    }
+  } catch (e) {
+    console.error("error testing target origin", e);
   }
 }
 function checkIsObject(message) {
@@ -7230,7 +7234,7 @@ function App() {
       receiveError: console.error
     });
     return client.disable;
-  }, [targetOrigin]);
+  }, []);
   useEffect(init, [init]);
   useEffect(() => {
     if (document.getElementById("auto-send").checked) {
@@ -7243,7 +7247,12 @@ function App() {
     }
   }, [message]);
   useEffect(() => {
-    client.targetOrigin = targetOrigin;
+    try {
+      new URL(targetOrigin);
+      client.targetOrigin = targetOrigin;
+    } catch (e) {
+      console.log("not changing client origin");
+    }
   }, [targetOrigin]);
   useEffect(() => {
     client.messagingHandle = messageHandle;
@@ -7262,12 +7271,18 @@ function App() {
     document.getElementById("config-panel").close();
   }
   function configSave() {
-    if (targetOrigin !== new URL(targetOrigin).origin) {
-      console.error("Invalid origin", targetOrigin);
+    try {
+      const url = new URL(targetOrigin);
+      if (url.origin !== targetOrigin) {
+        console.warn(`EHR origin is not normalized - saving as '${url.origin}'`);
+      }
+      mockClient.tokenResponse.smart_web_messaging_origin = url.origin;
+      localStorage.setItem("app/ehrOrigin", url.origin);
+    } catch (e) {
+      console.log("not saving changes to EHR origin!");
+      console.error(e);
     }
     mockClient.tokenResponse.smart_web_messaging_handle = messageHandle;
-    mockClient.tokenResponse.smart_web_messaging_origin = targetOrigin;
-    localStorage.setItem("app/ehrOrigin", targetOrigin);
     localStorage.setItem("app/messageHandle", messageHandle);
   }
   function updateMessage(e) {
