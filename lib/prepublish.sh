@@ -32,6 +32,9 @@ if [[ $NEXT != $SWM ]]; then
   exit 1
 fi
 
+echo "Copying most recent user guide into ../docs"
+cp README.md ../docs/lib-users.md
+
 echo "OK to publish new version: $NEXT"
 if [[ $( basename $PWD ) == 'lib' ]]; then
   echo "Running 'npm publish' from the build directory!"
