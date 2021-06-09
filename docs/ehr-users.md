@@ -2,6 +2,8 @@
 
 A simple, mock EHR that can be used to test SMART Web Messaging capable apps.
 
+![image](https://user-images.githubusercontent.com/4342684/121296318-1103d900-c8b6-11eb-8e12-79cdc2fd0d31.png)
+
 ## User Instructions
 
 ### Profile Audience
@@ -14,7 +16,9 @@ Embed your app into this demo EHR, initiate web messages to the EHR, and even mo
 
 ### Installing the Companion Library
 
-There is a companion library that is distributed through `npm`.  Install it using the following command:
+There is a companion library that is distributed through `npm`.  The full documentation is [here](https://github.com/barabo/swm-dd-demo/tree/main/lib#smart-web-messaging-client-library).
+
+Install it using the following command:
 
 ```bash
 npm install --save swm-client-lib
@@ -30,54 +34,25 @@ import * as swm from 'swm-client-lib';
 
 ### Configuration and Setup
 
-To use the provided demo EHR, you must configure the EHR to use your app's web origin.  By default, the app uses `http://localhost:8001` as the app origin, but this configuration can be changed to your remote address.
-
-After your app completes its SMART Launch, it should retain a handle on the SMART launch client, and provide it to the companion library when creating messages to send to the EHR.  The library expects the client to contain `smart_web_messaging_handle` and `smart_web_messaging_origin` parameters in the `tokenResponse` section of the client.
-
-Here's an example from the demo React App that may be informative:
-
-```js
-import React, { useState } from 'react';
-import './App.css';
-import * as swm from 'swm-client-lib';  // npm -i swm-client-lib
-
-const client = getSmartLaunchClient();  // hand-wavy bit here.
-
-function App() {
-  const [message, setMessage] = useState("{}");
-  const [response, setResponse] = useState("");
-...
-  // Enable the postMessage API for EHR responses to the App.
-  swm.enablePostMessage(targetOrigin, (response) => {
-    setResponse(JSON.stringify(response, null, 2));
-  });
-...
-  function stringify(message) {
-    setMessage(JSON.stringify(message, null, 2));
-  }
-
-  function handshake() {
-    stringify(swm.getHandshakeMessage(client));
-  }
-
-  function uiDone() {
-    stringify(swm.getUiDoneMessage(client));
-  }
-...
-  function sendMessage() {
-    try {
-      const m = JSON.parse(message);
-      swm.checkMessageType(m);
-      swm.sendMessage(client, m);
-      setResponse('Awaiting EHR response...');
-    } catch (e) {
-      setResponse(e.message);
-      console.error('failed to send message', e);
-    }
-  }
-...
-```
+Refer to the client library documentation for full instructions, including some of the concepts behind using the library to enable SMART Web Messaging in your app.
 
 ## User Interface
 
-![image](https://user-images.githubusercontent.com/4342684/118538020-45e79a80-b713-11eb-878d-33f476ed02f3.png)
+![image](https://user-images.githubusercontent.com/4342684/121296693-ae5f0d00-c8b6-11eb-8ac3-916870280a13.png)
+
+The mock EHR features two panels.  The left panel displays the most recent message received from your app.  The right panel is automatically populated with a
+possible response to the received message, which mostly based on the received `messageType`.  You can edit this response before sending it to your app, or select one of the template responses in the 'Insert a response...' dropdown.
+
+### EHR Configuration
+
+![image](https://user-images.githubusercontent.com/4342684/121297214-99cf4480-c8b7-11eb-91bb-477ba069b548.png)
+
+Click the configure button in the upper right corner to enter your app URL.
+
+Make sure your app is configured to use the value shown in the Session Handle, or messages from your app will be ignored by the Mock EHR!
+
+### EHR Scratchpad
+
+![image](https://user-images.githubusercontent.com/4342684/121297695-54f7dd80-c8b8-11eb-8152-ca116607e006.png)
+
+Your app can create, read, update, and delete entries in the EHR scratchpad.  Click the Scratchpad button to hide and reveal the scratchpad contents.
