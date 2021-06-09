@@ -7233,7 +7233,8 @@ function Ehr() {
       },
       receiveError: console.error
     });
-  }, [appOrigin, sessionHandle]);
+    return client.disable;
+  }, []);
   useEffect(init, [init]);
   useEffect(() => {
     const messageType = message.messageType || "";
