@@ -95,6 +95,58 @@ client.enable({
 });
 ```
 
+A client *must* call `client.enable` to activate the `postMessage` event listener.  The library event listener will validate the target origin of received messages, and correlate the messages with any unresolved promises (see the section below on asynchronous calls).
+
+**It is the responsibility of the EHR to verify that the messaging handle is valid!**
+
+### Message creation
+
+The client library provides a few different methods for constructing valid messages and responses.  If you wish to customize the messages or inspect them in any way before sending them, these methods will be helpful.
+
+Consider the following example.
+
+```js
+const launchProblemReview = client.createMessage('ui.launchActivity', {
+  activityType: "problem-review",
+  activityParameters: {
+    problemLocation: "Condition/123"
+  }
+});
+```
+
+The client library uses the configured `smart_web_messaging_handle` and generates a unique message ID to produce a message that looks like this.
+
+```json
+{
+  "messageType": "ui.launchActivity",
+  "messagingHandle": "RXhhbXBsZSBoYW5kbGUK",
+  "messageId": "e6cd18b7-ba90-4bc1-a415-b522bfebb0ac",
+  "payload": {
+    "activityType": "problem-review",
+    "activityParameters": {
+      "problemLocation": "Condition/123"
+    }
+  }
+}
+```
+
+The message can then be sent in a separate call using the `sendMessage` call.
+
+```js
+client.sendMessage(launchProblemReview);
+```
+
+Another way to do the same thing is with the `client.send` call.
+
+```js
+client.send('ui.launchActivity', {
+  activityType: "problem-review",
+  activityParameters: {
+    problemLocation: "Condition/123"
+  }
+});
+```
+
 ### Asynchronous calls
 
 The client also supports asynchronous calls for a better app development experience.
@@ -108,7 +160,7 @@ client.getMessageResponse('status.handshake').then(console.log);
 
 ## Library Development
 
-The remainder of this document is intended for library maintainers.
+The remainder of this document is intended for library maintainers.  Thank you!
 
 ### Publish a new version
 
@@ -124,7 +176,7 @@ When ready to release a new version, please update the version number in both
 ```json
 {
   "name": "swm-client-lib",
-  "version": "0.3.4",
+  "version": "0.3.5",
   UPDATE THIS ^^^^^
   "description": "A SMART Web Messaging Client Library",
   "main": "swm.js",
@@ -148,7 +200,7 @@ When ready to release a new version, please update the version number in both
  */
 export function getCapabilities() {
   return {
-    version: '0.3.4',  // UPDATED WITH EACH PUBLISHED RELEASE
+    version: '0.3.5',  // UPDATED WITH EACH PUBLISHED RELEASE
     igVersion: 'STU1',
     supportedMessageTypes: [
       'status.handshake',
@@ -167,3 +219,78 @@ Publish the new version by running `npm run publish` - *not* - `npm publish`.
 These commands do different things, and there is a *prepublish* script that
 runs when you publish it the expected way.
 
+Here's an example command line session showing the publication and release of `v0.3.5`.
+
+```sh
+can@msft-mbp ~/code/swm-dd-demo/lib (main) $ npm run publish
+
+> swm-client-lib@0.3.5 prepublish
+> bash prepublish.sh
+
+Ensuring a clean build...
+
+> swm-client-lib@0.3.5 lint
+> prettier --check swm.js
+
+Checking formatting...
+All matched files use Prettier code style!
+Ensuring a fresh build...
+
+> swm-client-lib@0.3.5 build
+> snowpack build
+
+[24:12:10] [snowpack] ! building files...
+[24:12:10] [snowpack] ✔ files built. [0.02s]
+[24:12:10] [snowpack] ! building dependencies...
+[24:12:10] [snowpack] ✔ dependencies built. [0.19s]
+[24:12:10] [snowpack] ! writing to disk...
+[24:12:10] [snowpack] ✔ write complete. [0.01s]
+[24:12:10] [snowpack] ▶ Build Complete!
+OK to publish new version: 0.3.5
+Running 'npm publish' from the build directory!
+npm notice 
+npm notice 📦  swm-client-lib@0.3.5
+npm notice === Tarball Contents === 
+npm notice 776B  README.md               
+npm notice 46B   meta/pkg/import-map.json
+npm notice 3.1kB meta/pkg/uuid.js        
+npm notice 6.6kB meta/pkg/uuid.js.map    
+npm notice 851B  package.json            
+npm notice 8.1kB swm.js                  
+npm notice === Tarball Details === 
+npm notice name:          swm-client-lib                          
+npm notice version:       0.3.5                                   
+npm notice filename:      swm-client-lib-0.3.5.tgz                
+npm notice package size:  5.6 kB                                  
+npm notice unpacked size: 19.5 kB                                 
+npm notice shasum:        e0d7c6d656bd15a317dd27fb0fbe1af87f68d053
+npm notice integrity:     sha512-BSDdyOua3vYwf[...]uyisTfa+m/Z5A==
+npm notice total files:   6                                       
+npm notice 
+⸨░░░░░░░░░░░░░░░░░░⸩ ⠼ : notice
+> swm-client-lib@0.3.5 publish
+> echo PUBLISHED
+
+PUBLISHED░░░░░░░░░░⸩ ⠼ : notice
++ swm-client-lib@0.3.5
+
+> swm-client-lib@0.3.5 publish
+> echo PUBLISHED
+
+PUBLISHED
+
+can@msft-mbp ~/code/swm-dd-demo/lib (main) $ git add build/
+
+can@msft-mbp ~/code/swm-dd-demo/lib (main) $ git commit -m "v0.3.5 release"
+[main 9ee1db9] v0.3.5 release
+ 2 files changed, 12 insertions(+), 8 deletions(-)
+
+can@msft-mbp ~/code/swm-dd-demo/lib (main) $ git push
+Enumerating objects: 25, done.
+Counting objects: 100% (21/21), done.
+Delta compression using up to 12 threads
+Compressing objects: 100% (13/13), done.
+Writing objects: 100% (13/13), 1.28 KiB | 1.28 MiB/s, done.
+Total 13 (delta 10), reused 0 (delta 0)
+remote: Resolving deltas: 100% (10/10), completed with 5 local objects.
+```
