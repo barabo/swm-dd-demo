@@ -53,7 +53,7 @@ function Ehr() {
       receiveError: console.error,
     });
     return client.disable;
-  }, [appOrigin, sessionHandle]);
+  }, []);
   useEffect(init, [init]);
 
   // Automatically insert a response template if the received message matches a
