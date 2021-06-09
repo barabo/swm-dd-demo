@@ -117,7 +117,17 @@ function Ehr() {
   }
 
   function closeConfig() {
-    localStorage.setItem('ehr/appUrl', appUrl);
+    try {
+      const url = new URL(appUrl);
+      if (url.toString() !== appUrl) {
+        console.warn(
+          `appUrl is not normalized - saving as '${url.toString()}'`,
+        );
+      }
+      localStorage.setItem('ehr/appUrl', url.toString());
+    } catch (e) {
+      console.error(e);
+    }
     localStorage.setItem('ehr/sessionHandle', sessionHandle);
     document.getElementById('config-panel').close();
   }
