@@ -4,6 +4,8 @@ A simple, mock EHR that can be used to test SMART Web Messaging capable apps.
 
 ![image](https://user-images.githubusercontent.com/4342684/121296318-1103d900-c8b6-11eb-8e12-79cdc2fd0d31.png)
 
+[CLICK HERE](https://barabo.github.io/swm-dd-demo/ehr/) to launch it, or visit: [https://barabo.github.io/swm-dd-demo/ehr/](https://barabo.github.io/swm-dd-demo/ehr/)
+
 ## User Instructions
 
 ### Profile Audience
@@ -34,7 +36,9 @@ import * as swm from 'swm-client-lib';
 
 ### Configuration and Setup
 
-Refer to the client library documentation for full instructions, including some of the concepts behind using the library to enable SMART Web Messaging in your app.
+Refer to the [client library documentation](https://github.com/barabo/swm-dd-demo/tree/main/lib#smart-web-messaging-client-library) for full instructions, including some of the concepts behind using the library to enable SMART Web Messaging in your app.
+
+Link: [https://github.com/barabo/swm-dd-demo/tree/main/lib](https://github.com/barabo/swm-dd-demo/tree/main/lib#smart-web-messaging-client-library)
 
 ## User Interface
 
