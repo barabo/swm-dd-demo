@@ -64,7 +64,7 @@ function App() {
       new URL(targetOrigin);
       client.targetOrigin = targetOrigin;
     } catch (e) {
-      console.log('not changing client origin')
+      console.log('not changing client origin');
     }
   }, [targetOrigin]);
 
