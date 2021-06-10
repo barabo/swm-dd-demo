@@ -95,13 +95,17 @@ client.enable({
 });
 ```
 
-A client *must* call `client.enable` to activate the `postMessage` event listener.  The library event listener will validate the target origin of received messages, and correlate the messages with any unresolved promises (see the section below on asynchronous calls).
+A client *must* call `client.enable` to activate the `postMessage` event listener.  The library
+event listener will validate the target origin of received messages, and correlate the messages
+with any unresolved promises (see the section below on asynchronous calls).
 
 **It is the responsibility of the EHR to verify that the messaging handle is valid!**
 
 ### Message creation
 
-The client library provides a few different methods for constructing valid messages and responses.  If you wish to customize the messages or inspect them in any way before sending them, these methods will be helpful.
+The client library provides a few different methods for constructing valid messages and responses.
+If you wish to customize the messages or inspect them in any way before sending them, these methods
+will be helpful.
 
 Consider the following example.
 
@@ -114,7 +118,8 @@ const launchProblemReview = client.createMessage('ui.launchActivity', {
 });
 ```
 
-The client library uses the configured `smart_web_messaging_handle` and generates a unique message ID to produce a message that looks like this.
+The client library uses the configured `smart_web_messaging_handle` and generates a unique message
+ID to produce a message that looks like this.
 
 ```json
 {
