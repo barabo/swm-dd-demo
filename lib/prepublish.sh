@@ -32,8 +32,9 @@ if [[ $NEXT != $SWM ]]; then
   exit 1
 fi
 
-echo "Copying most recent user guide into ../docs"
+echo "Copying most recent guides into ../docs"
 cp README.md ../docs/lib-users.md
+cp lib-maintainer.md ../docs
 
 echo "OK to publish new version: $NEXT"
 if [[ $( basename $PWD ) == 'lib' ]]; then
