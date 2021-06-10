@@ -1,7 +1,7 @@
 {
-  "name": "swm-c10n-demo",
+  "name": "swm-dd-demo",
   "version": "1.0.0",
-  "description": "Demo code for the May 2021, HL7 Connectathon - SMART Web Messaging Track",
+  "description": "Demo code for the June 2021, HL7 DevDays - SMART Web Messaging Tutorial",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
