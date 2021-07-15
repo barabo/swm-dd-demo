@@ -34,7 +34,7 @@ function App() {
   const clientHolder = useRef(null);
 
   useEffect(() => {
-    console.debug('creating a new swm client in the app');
+    console.debug('APP: creating a new swm client');
     const newClient = new swm.Client(messageHandle, targetOrigin);
     newClient.enable({
       receiveResponse: (r) => {
@@ -44,7 +44,7 @@ function App() {
     });
     clientHolder.current = newClient;
     return () => {
-      console.log('disabling an expired swm client in the app');
+      console.log('APP: disabling an expired swm client');
       newClient.disable();
     }
   }, [targetOrigin, messageHandle]);
