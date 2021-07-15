@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Ehr.css';
 import * as swm from 'swm-client-lib'; // npm i -s swm-client-lib
 
@@ -33,11 +33,13 @@ function Ehr() {
   const [activity, setActivity] = useState({});
   const [countdown, setCountdown] = useState(defaultCountdown);
 
-  const client = new swm.Client(sessionHandle, appOrigin);
+  const clientHolder = useRef(null);
 
-  // Enable the client to receive and reply to messages from the embedded app.
-  const init = useCallback(() => {
-    client.enable({
+  useEffect(() => {
+    console.debug('EHR: creating new swm client');
+    const newClient = new swm.Client(sessionHandle, appOrigin);
+    console.debug('EHR: enabling swm client');
+    newClient.enable({
       receiveMessage: (message) => {
         // Only respond to messages with recognized messaging handles.
         if (sessionHandles.has(message.messagingHandle)) {
@@ -52,9 +54,12 @@ function Ehr() {
       },
       receiveError: console.error,
     });
-    return client.disable;
-  }, []);
-  useEffect(init, [init]);
+    clientHolder.current = newClient;
+    return () => {
+      console.debug('EHR: disabling an old swm client');
+      newClient.disable();
+    };
+  }, [sessionHandle, appOrigin]);
 
   // Automatically insert a response template if the received message matches a
   // known messageType.
@@ -87,14 +92,6 @@ function Ehr() {
       closeApp();
     }
   }, [countdown]);
-
-  useEffect(() => {
-    client.targetOrigin = appOrigin;
-  }, [appOrigin]);
-
-  useEffect(() => {
-    client.messagingHandle = sessionHandle;
-  }, [sessionHandle]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
@@ -143,11 +140,11 @@ function Ehr() {
   }
 
   function getHandshakeResponse() {
-    return client.createResponse(message);
+    return clientHolder.current.createResponse(message);
   }
 
   function getUiDoneResponse(success) {
-    return client.createResponse(message, {
+    return clientHolder.current.createResponse(message, {
       status: (success && 'success') || 'failure',
       statusDetail: {
         text: `EHR ${(success && 'hid') || 'did not hide'} the app iframe`,
@@ -161,7 +158,7 @@ function Ehr() {
       console.error('Missing activityType from message', message);
     }
     const status = (success && 'success') || 'failure';
-    return client.createResponse(message, {
+    return clientHolder.current.createResponse(message, {
       status,
       statusDetail: {
         text: `EHR completed activity "${activityType}" with status: ${status}`,
@@ -177,7 +174,7 @@ function Ehr() {
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
-    return client.createResponse(message, {
+    return clientHolder.current.createResponse(message, {
       status: '200 OK',
       location,
     });
@@ -190,7 +187,7 @@ function Ehr() {
     const selected = [...scratchpad.entries()].filter(
       (e) => !location || e[0] === location,
     );
-    return client.createResponse(message, {
+    return clientHolder.current.createResponse(message, {
       status,
       scratchpad: Object.fromEntries(selected),
     });
@@ -199,13 +196,13 @@ function Ehr() {
   function getScratchpadDeleteResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    return client.createResponse(message, { status });
+    return clientHolder.current.createResponse(message, { status });
   }
 
   function getScratchpadUpdateResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    return client.createResponse(message, { status, location });
+    return clientHolder.current.createResponse(message, { status, location });
   }
 
   function copyResponseToClipboard() {
@@ -232,7 +229,7 @@ function Ehr() {
       if (!window) {
         console.error('Unknown session handle', sessionHandle);
       }
-      client.sendResponse(r, window);
+      clientHolder.current.sendResponse(r, window);
     } catch (e) {
       console.error('failed to send message', e);
     }
