@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Ehr.css';
 import * as swm from 'swm-client-lib'; // npm i -s swm-client-lib
 
@@ -32,10 +32,16 @@ function Ehr() {
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
   const [countdown, setCountdown] = useState(defaultCountdown);
-
-  const clientHolder = useRef(null);
+  const [client, setClient] = useState(null);
 
   useEffect(() => {
+    // Expunge the old client.
+    if (client?.messagingHandle) {
+      sessionHandles.delete(client.messagingHandle);
+    }
+    setClient(null);
+    saveSessionHandle();
+
     console.debug('EHR: creating new swm client');
     const newClient = new swm.Client(sessionHandle, appOrigin);
     console.debug('EHR: enabling swm client');
@@ -54,7 +60,7 @@ function Ehr() {
       },
       receiveError: console.error,
     });
-    clientHolder.current = newClient;
+    setClient(newClient);
     return () => {
       console.debug('EHR: disabling an old swm client');
       newClient.disable();
@@ -140,11 +146,11 @@ function Ehr() {
   }
 
   function getHandshakeResponse() {
-    return clientHolder.current.createResponse(message);
+    return client.createResponse(message);
   }
 
   function getUiDoneResponse(success) {
-    return clientHolder.current.createResponse(message, {
+    return client.createResponse(message, {
       status: (success && 'success') || 'failure',
       statusDetail: {
         text: `EHR ${(success && 'hid') || 'did not hide'} the app iframe`,
@@ -158,7 +164,7 @@ function Ehr() {
       console.error('Missing activityType from message', message);
     }
     const status = (success && 'success') || 'failure';
-    return clientHolder.current.createResponse(message, {
+    return client.createResponse(message, {
       status,
       statusDetail: {
         text: `EHR completed activity "${activityType}" with status: ${status}`,
@@ -174,7 +180,7 @@ function Ehr() {
     const id = 1 + (resourceIds.get(resourceType) || 0);
     resourceIds.set(resourceType, id);
     const location = `${resourceType}/${id}`;
-    return clientHolder.current.createResponse(message, {
+    return client.createResponse(message, {
       status: '200 OK',
       location,
     });
@@ -187,7 +193,7 @@ function Ehr() {
     const selected = [...scratchpad.entries()].filter(
       (e) => !location || e[0] === location,
     );
-    return clientHolder.current.createResponse(message, {
+    return client.createResponse(message, {
       status,
       scratchpad: Object.fromEntries(selected),
     });
@@ -196,13 +202,13 @@ function Ehr() {
   function getScratchpadDeleteResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    return clientHolder.current.createResponse(message, { status });
+    return client.createResponse(message, { status });
   }
 
   function getScratchpadUpdateResponse() {
     const location = message?.payload?.location ?? 'Encounter/123';
     const status = (scratchpad.has(location) && '200 OK') || '404 NOT FOUND';
-    return clientHolder.current.createResponse(message, { status, location });
+    return client.createResponse(message, { status, location });
   }
 
   function copyResponseToClipboard() {
@@ -229,7 +235,7 @@ function Ehr() {
       if (!window) {
         console.error('Unknown session handle', sessionHandle);
       }
-      clientHolder.current.sendResponse(r, window);
+      client.sendResponse(r, window);
     } catch (e) {
       console.error('failed to send message', e);
     }
