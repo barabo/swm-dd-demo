@@ -54,7 +54,7 @@ function App() {
       receiveError: console.error,
     });
     setClient(newClient);
-    setMessage('{}');
+    prepopulate({ ...JSON.parse(message), messagingHandle: messageHandle });
     return () => {
       console.log('APP: disabling an expired swm client');
       newClient.disable();
