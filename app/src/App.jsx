@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import * as swm from 'swm-client-lib'; // npm -i swm-client-lib
 
@@ -31,10 +31,20 @@ function App() {
     mockClient.tokenResponse.smart_web_messaging_origin,
   );
 
-  const clientHolder = useRef(null);
+  const [client, setClient] = useState(null);
 
   useEffect(() => {
+    setClient(null);
     console.debug('APP: creating a new swm client');
+
+    // Sanity check the URL is a valid format.
+    try {
+      new URL(targetOrigin);
+    } catch (e) {
+      console.warn('not changing client origin:', e);
+      return;
+    }
+
     const newClient = new swm.Client(messageHandle, targetOrigin);
     newClient.enable({
       receiveResponse: (r) => {
@@ -42,11 +52,11 @@ function App() {
       },
       receiveError: console.error,
     });
-    clientHolder.current = newClient;
+    setClient(newClient);
     return () => {
       console.log('APP: disabling an expired swm client');
       newClient.disable();
-    }
+    };
   }, [targetOrigin, messageHandle]);
 
   // Auto-send should trigger when the response is updated
@@ -62,15 +72,6 @@ function App() {
       setResponse('Click SEND to send message to EHR...');
     }
   }, [message]);
-
-  useEffect(() => {
-    try {
-      new URL(targetOrigin);
-      clientHolder.current.targetOrigin = targetOrigin;
-    } catch (e) {
-      console.warn('not changing client origin:', e);
-    }
-  }, [targetOrigin]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
@@ -118,15 +119,15 @@ function App() {
   }
 
   function getHandshakeMessage() {
-    return clientHolder.current.createMessage('status.handshake');
+    return client.createMessage('status.handshake');
   }
 
   function getUiDoneMessage() {
-    return clientHolder.current.createMessage('ui.done');
+    return client.createMessage('ui.done');
   }
 
   function getUiLaunchActivityMessage() {
-    return clientHolder.current.createMessage('ui.launchActivity', {
+    return client.createMessage('ui.launchActivity', {
       activityType: 'problem-review',
       activityParameters: {
         problemLocation: 'Condition/123',
@@ -135,7 +136,7 @@ function App() {
   }
 
   function getScratchpadCreateMessage() {
-    return clientHolder.current.createMessage('scratchpad.create', {
+    return client.createMessage('scratchpad.create', {
       resource: {
         resourceType: 'ServiceRequest',
         status: 'draft',
@@ -144,13 +145,13 @@ function App() {
   }
 
   function getScratchpadReadMessage() {
-    return clientHolder.current.createMessage('scratchpad.read');
+    return client.createMessage('scratchpad.read');
   }
 
   function getScratchpadDeleteMessage() {
     // TODO: read the contents of the scratchpad to set the location?
     const location = 'MedicationRequest/456';
-    return clientHolder.current.createMessage('scratchpad.delete', {
+    return client.createMessage('scratchpad.delete', {
       location,
     });
   }
@@ -163,7 +164,7 @@ function App() {
       status: 'draft',
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    return clientHolder.current.createMessage('scratchpad.update', {
+    return client.createMessage('scratchpad.update', {
       location,
       resource,
     });
@@ -174,7 +175,7 @@ function App() {
       const m = JSON.parse(message);
       swm.checkIsObject(m);
       setResponse('Failed to send message to EHR!');
-      clientHolder.current.sendMessage(m);
+      client.sendMessage(m);
       setResponse('Awaiting EHR response...');
     } catch (e) {
       setResponse(e.message);
