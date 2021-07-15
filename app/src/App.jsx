@@ -46,6 +46,7 @@ function App() {
     }
 
     const newClient = new swm.Client(messageHandle, targetOrigin);
+    console.debug('APP: enabling new swm client');
     newClient.enable({
       receiveResponse: (r) => {
         setResponse(JSON.stringify(r, null, 2));
@@ -53,6 +54,7 @@ function App() {
       receiveError: console.error,
     });
     setClient(newClient);
+    setMessage('{}');
     return () => {
       console.log('APP: disabling an expired swm client');
       newClient.disable();
