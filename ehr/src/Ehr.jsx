@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Ehr.css';
 import * as swm from 'swm-client-lib'; // npm i -s swm-client-lib
 
@@ -32,12 +32,20 @@ function Ehr() {
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
   const [countdown, setCountdown] = useState(defaultCountdown);
+  const [client, setClient] = useState(null);
 
-  const client = new swm.Client(sessionHandle, appOrigin);
+  useEffect(() => {
+    // Expunge the old client.
+    if (client?.messagingHandle) {
+      sessionHandles.delete(client.messagingHandle);
+    }
+    setClient(null);
+    saveSessionHandle();
 
-  // Enable the client to receive and reply to messages from the embedded app.
-  const init = useCallback(() => {
-    client.enable({
+    console.debug('EHR: creating new swm client');
+    const newClient = new swm.Client(sessionHandle, appOrigin);
+    console.debug('EHR: enabling swm client');
+    newClient.enable({
       receiveMessage: (message) => {
         // Only respond to messages with recognized messaging handles.
         if (sessionHandles.has(message.messagingHandle)) {
@@ -52,9 +60,12 @@ function Ehr() {
       },
       receiveError: console.error,
     });
-    return client.disable;
-  }, []);
-  useEffect(init, [init]);
+    setClient(newClient);
+    return () => {
+      console.debug('EHR: disabling an old swm client');
+      newClient.disable();
+    };
+  }, [sessionHandle, appOrigin]);
 
   // Automatically insert a response template if the received message matches a
   // known messageType.
@@ -87,14 +98,6 @@ function Ehr() {
       closeApp();
     }
   }, [countdown]);
-
-  useEffect(() => {
-    client.targetOrigin = appOrigin;
-  }, [appOrigin]);
-
-  useEffect(() => {
-    client.messagingHandle = sessionHandle;
-  }, [sessionHandle]);
 
   function openConfig() {
     document.getElementById('config-panel').showModal();
