@@ -386,7 +386,6 @@ var react = createCommonjsModule(function(module) {
 });
 
 // build/_snowpack/pkg/react.js
-var useCallback = react.useCallback;
 var useEffect = react.useEffect;
 var useState = react.useState;
 
@@ -7169,12 +7168,16 @@ var Client = class {
   }
 };
 function checkTargetOrigin(targetOrigin) {
-  if (targetOrigin !== new URL(targetOrigin).origin) {
-    console.warn("targetOrigin is not normalized", targetOrigin);
-  }
-  const ancestors = document.defaultView.location.ancestorOrigins;
-  if (ancestors.length && !ancestors.contains(targetOrigin)) {
-    console.warn(`targetOrigin ${targetOrigin}, is not an ancestor origin`, ancestors);
+  try {
+    if (targetOrigin !== new URL(targetOrigin).origin) {
+      console.warn("targetOrigin is not normalized", targetOrigin);
+    }
+    const ancestors = document.defaultView.location.ancestorOrigins;
+    if (ancestors.length && !ancestors.contains(targetOrigin)) {
+      console.warn(`targetOrigin ${targetOrigin}, is not an ancestor origin`, ancestors);
+    }
+  } catch (e) {
+    console.error("error testing target origin", e);
   }
 }
 function checkIsObject(message) {
@@ -7219,9 +7222,17 @@ function Ehr() {
   const [scratchpad, setScratchpad] = useState(new Map());
   const [activity, setActivity] = useState({});
   const [countdown, setCountdown] = useState(defaultCountdown);
-  const client = new Client(sessionHandle, appOrigin);
-  const init = useCallback(() => {
-    client.enable({
+  const [client, setClient] = useState(null);
+  useEffect(() => {
+    if (client?.messagingHandle) {
+      sessionHandles.delete(client.messagingHandle);
+    }
+    setClient(null);
+    saveSessionHandle();
+    console.debug("EHR: creating new swm client");
+    const newClient = new Client(sessionHandle, appOrigin);
+    console.debug("EHR: enabling swm client");
+    newClient.enable({
       receiveMessage: (message2) => {
         if (sessionHandles.has(message2.messagingHandle)) {
           setResponse(`Awaiting EHR action in response to the received '${message2?.messageType}' message...`);
@@ -7233,9 +7244,12 @@ function Ehr() {
       },
       receiveError: console.error
     });
-    return client.disable;
-  }, []);
-  useEffect(init, [init]);
+    setClient(newClient);
+    return () => {
+      console.debug("EHR: disabling an old swm client");
+      newClient.disable();
+    };
+  }, [sessionHandle, appOrigin]);
   useEffect(() => {
     const messageType = message.messageType || "";
     const autoReply = document.getElementById("auto-reply").checked;
@@ -7259,12 +7273,6 @@ function Ehr() {
       closeApp();
     }
   }, [countdown]);
-  useEffect(() => {
-    client.targetOrigin = appOrigin;
-  }, [appOrigin]);
-  useEffect(() => {
-    client.messagingHandle = sessionHandle;
-  }, [sessionHandle]);
   function openConfig() {
     document.getElementById("config-panel").showModal();
   }
