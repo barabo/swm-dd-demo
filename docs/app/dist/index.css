@@ -70,7 +70,7 @@ code {
   justify-content: space-between;
   display: flex;
   padding-bottom: 1vmin;
-  font-size: 2vh;
+  font-size: 1.2rem;
 }
 .close-config {
   min-width: 3vmax;

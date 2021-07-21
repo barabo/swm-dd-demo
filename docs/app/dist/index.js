@@ -386,7 +386,6 @@ var react = createCommonjsModule(function(module) {
 });
 
 // build/_snowpack/pkg/react.js
-var useCallback = react.useCallback;
 var useEffect = react.useEffect;
 var useState = react.useState;
 
@@ -7225,17 +7224,31 @@ function App() {
   const [response, setResponse] = useState("");
   const [messageHandle, setMessageHandle] = useState(mockClient.tokenResponse.smart_web_messaging_handle);
   const [targetOrigin, setTargetOrigin] = useState(mockClient.tokenResponse.smart_web_messaging_origin);
-  const client = new Client(messageHandle, targetOrigin);
-  const init = useCallback(() => {
-    client.enable({
+  const [client, setClient] = useState(null);
+  useEffect(() => {
+    setClient(null);
+    console.debug("APP: creating a new swm client");
+    try {
+      new URL(targetOrigin);
+    } catch (e) {
+      console.warn("not changing client origin:", e);
+      return;
+    }
+    const newClient = new Client(messageHandle, targetOrigin);
+    console.debug("APP: enabling new swm client");
+    newClient.enable({
       receiveResponse: (r) => {
         setResponse(JSON.stringify(r, null, 2));
       },
       receiveError: console.error
     });
-    return client.disable;
-  }, []);
-  useEffect(init, [init]);
+    setClient(newClient);
+    prepopulate({...JSON.parse(message), messagingHandle: messageHandle});
+    return () => {
+      console.log("APP: disabling an expired swm client");
+      newClient.disable();
+    };
+  }, [targetOrigin, messageHandle]);
   useEffect(() => {
     if (document.getElementById("auto-send").checked) {
       sendMessage();
@@ -7246,17 +7259,6 @@ function App() {
       setResponse("Click SEND to send message to EHR...");
     }
   }, [message]);
-  useEffect(() => {
-    try {
-      new URL(targetOrigin);
-      client.targetOrigin = targetOrigin;
-    } catch (e) {
-      console.log("not changing client origin");
-    }
-  }, [targetOrigin]);
-  useEffect(() => {
-    client.messagingHandle = messageHandle;
-  }, [messageHandle]);
   function openConfig() {
     document.getElementById("config-panel").showModal();
   }
@@ -7318,7 +7320,9 @@ function App() {
   }
   function getScratchpadDeleteMessage() {
     const location = "MedicationRequest/456";
-    return client.createMessage("scratchpad.delete", {location});
+    return client.createMessage("scratchpad.delete", {
+      location
+    });
   }
   function getScratchpadUpdateMessage() {
     const resource = {
@@ -7327,7 +7331,10 @@ function App() {
       status: "draft"
     };
     const location = `${resource.resourceType}/${resource.id}`;
-    return client.createMessage("scratchpad.update", {location, resource});
+    return client.createMessage("scratchpad.update", {
+      location,
+      resource
+    });
   }
   function sendMessage() {
     try {
